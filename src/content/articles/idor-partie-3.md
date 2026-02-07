@@ -1,6 +1,6 @@
 # IDOR : Les trucs que presque personne explique
 
-*GraphQL, WebSockets, UUIDs — là où les guides classiques s'arrêtent.*
+*GraphQL, WebSockets, UUIDs — les trucs que 90% des articles IDOR ignorent.*
 
 > [!TIP]
 > **Cet article est en 3 parties :**
@@ -12,7 +12,7 @@
 
 Si t'as lu les deux premières parties, tu sais tester les IDOR sur une API REST classique. Félicitations, t'es au niveau de 2015. 
 
-Le problème c'est que les apps en 2026, c'est du GraphQL, des WebSockets, des Server Actions Next.js, et des architectures multi-tenant où t'as trois niveaux d'IDs imbriqués. Les guides IDOR classiques te laissent dans le noir sur tout ça.
+Le problème c'est que les apps en 2026, c'est du GraphQL, des WebSockets, des Server Actions Next.js, et des architectures multi-tenant où t'as trois niveaux d'IDs imbriqués. Les articles IDOR classiques te laissent dans le noir sur tout ça.
 
 Cette partie, c'est pour combler ce trou.
 
