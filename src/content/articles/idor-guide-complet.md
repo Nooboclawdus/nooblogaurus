@@ -99,8 +99,9 @@ La solution qui marche :
 1. **Deux navigateurs différents** (pas juste deux fenêtres) — Firefox pour A, Chrome pour B par exemple
 2. **Ou deux profils de navigateur** — Chrome a une gestion de profils native, chaque profil a ses propres cookies
 3. **Ou un navigateur + navigation privée** — mais attention, la nav privée partage parfois des trucs avec la session normale
+4. **Ou [PwnFox](https://github.com/yeswehack/PwnFox)** — extension Firefox qui utilise les Multi-Account Containers pour isoler tes sessions. Chaque container a ses propres cookies, et bonus : le trafic est coloré dans Burp/Caido selon le container. Tu peux avoir 5 comptes dans le même navigateur sans te mélanger.
 
-L'idée c'est d'avoir une séparation physique impossible à confondre. Quand tu regardes Firefox, c'est A. Quand tu regardes Chrome, c'est B. Pas de question à se poser.
+L'idée c'est d'avoir une séparation claire impossible à confondre. Quand tu regardes Firefox, c'est A. Quand tu regardes Chrome, c'est B. Ou avec PwnFox : container rouge = victime, container bleu = attaquant. Pas de question à se poser.
 
 **Le proxy au milieu**
 
