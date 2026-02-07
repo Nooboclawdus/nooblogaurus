@@ -1,0 +1,160 @@
+---
+// Diagramme: Où chercher les IDs - surfaces d'attaque IDOR
+---
+
+<div class="diagram-container">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" class="surfaces-diagram">
+    <defs>
+      <filter id="glow-cyan-sf" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feFlood flood-color="#06b6d4" flood-opacity="0.4"/>
+        <feComposite in2="blur" operator="in"/>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glow-amber-sf" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feFlood flood-color="#f59e0b" flood-opacity="0.4"/>
+        <feComposite in2="blur" operator="in"/>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glow-red-sf" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feFlood flood-color="#ef4444" flood-opacity="0.4"/>
+        <feComposite in2="blur" operator="in"/>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      
+      <pattern id="grid-sf" width="25" height="25" patternUnits="userSpaceOnUse">
+        <path d="M 25 0 L 0 0 0 25" fill="none" stroke="rgba(100,100,140,0.06)" stroke-width="0.5"/>
+      </pattern>
+    </defs>
+    
+    <!-- Background -->
+    <rect width="800" height="420" fill="#0c0c14" rx="8"/>
+    <rect width="800" height="420" fill="url(#grid-sf)" rx="8"/>
+    
+    <!-- Title -->
+    <text x="400" y="35" text-anchor="middle" fill="#94a3b8" font-size="14" font-weight="600" letter-spacing="2" style="font-family: monospace;">OÙ CHERCHER LES IDs</text>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- CENTER: REQUEST                             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <g transform="translate(400, 200)">
+      <rect x="-70" y="-35" width="140" height="70" rx="8" fill="#0f1520" stroke="#06b6d4" stroke-width="2" filter="url(#glow-cyan-sf)"/>
+      <text x="0" y="-5" text-anchor="middle" fill="#06b6d4" font-size="13" font-weight="700">REQUÊTE</text>
+      <text x="0" y="15" text-anchor="middle" fill="#67e8f9" font-size="10">HTTP</text>
+    </g>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- LEFT COLUMN: Classique                      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <text x="130" y="70" text-anchor="middle" fill="#64748b" font-size="10" letter-spacing="1">CLASSIQUE</text>
+    
+    <!-- URL -->
+    <g transform="translate(130, 100)">
+      <rect x="-90" y="0" width="180" height="45" rx="5" fill="#0f1520" stroke="#22c55e" stroke-width="1.5"/>
+      <text x="0" y="18" text-anchor="middle" fill="#22c55e" font-size="11" font-weight="600">URL / Path</text>
+      <text x="0" y="35" text-anchor="middle" fill="#64748b" font-size="9" style="font-family: monospace;">/users/123/docs/456</text>
+    </g>
+    
+    <!-- Query params -->
+    <g transform="translate(130, 160)">
+      <rect x="-90" y="0" width="180" height="45" rx="5" fill="#0f1520" stroke="#22c55e" stroke-width="1.5"/>
+      <text x="0" y="18" text-anchor="middle" fill="#22c55e" font-size="11" font-weight="600">Query Params</text>
+      <text x="0" y="35" text-anchor="middle" fill="#64748b" font-size="9" style="font-family: monospace;">?id=123&user=456</text>
+    </g>
+    
+    <!-- Body JSON -->
+    <g transform="translate(130, 220)">
+      <rect x="-90" y="0" width="180" height="45" rx="5" fill="#0f1520" stroke="#22c55e" stroke-width="1.5"/>
+      <text x="0" y="18" text-anchor="middle" fill="#22c55e" font-size="11" font-weight="600">Body JSON</text>
+      <text x="0" y="35" text-anchor="middle" fill="#64748b" font-size="9" style="font-family: monospace;">{"userId": 123}</text>
+    </g>
+    
+    <!-- Lines to center -->
+    <line x1="220" y1="122" x2="330" y2="185" stroke="#22c55e" stroke-width="1" stroke-opacity="0.5"/>
+    <line x1="220" y1="182" x2="330" y2="200" stroke="#22c55e" stroke-width="1" stroke-opacity="0.5"/>
+    <line x1="220" y1="242" x2="330" y2="215" stroke="#22c55e" stroke-width="1" stroke-opacity="0.5"/>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- RIGHT COLUMN: Caché                         -->
+    <!-- ═══════════════════════════════════════════ -->
+    <text x="670" y="70" text-anchor="middle" fill="#64748b" font-size="10" letter-spacing="1">CACHÉ</text>
+    
+    <!-- Headers -->
+    <g transform="translate(670, 100)">
+      <rect x="-90" y="0" width="180" height="45" rx="5" fill="#0f1520" stroke="#f59e0b" stroke-width="1.5" filter="url(#glow-amber-sf)"/>
+      <text x="0" y="18" text-anchor="middle" fill="#f59e0b" font-size="11" font-weight="600">Headers Custom</text>
+      <text x="0" y="35" text-anchor="middle" fill="#64748b" font-size="9" style="font-family: monospace;">X-User-ID: 123</text>
+    </g>
+    
+    <!-- Cookies -->
+    <g transform="translate(670, 160)">
+      <rect x="-90" y="0" width="180" height="45" rx="5" fill="#0f1520" stroke="#f59e0b" stroke-width="1.5" filter="url(#glow-amber-sf)"/>
+      <text x="0" y="18" text-anchor="middle" fill="#f59e0b" font-size="11" font-weight="600">Cookies</text>
+      <text x="0" y="35" text-anchor="middle" fill="#64748b" font-size="9" style="font-family: monospace;">user_ctx=eyJ1aWQ...</text>
+    </g>
+    
+    <!-- Base64 -->
+    <g transform="translate(670, 220)">
+      <rect x="-90" y="0" width="180" height="45" rx="5" fill="#0f1520" stroke="#f59e0b" stroke-width="1.5" filter="url(#glow-amber-sf)"/>
+      <text x="0" y="18" text-anchor="middle" fill="#f59e0b" font-size="11" font-weight="600">Base64 / Encodé</text>
+      <text x="0" y="35" text-anchor="middle" fill="#64748b" font-size="9" style="font-family: monospace;">ref=eyJ1c2VySWQ...</text>
+    </g>
+    
+    <!-- Lines to center -->
+    <line x1="580" y1="122" x2="470" y2="185" stroke="#f59e0b" stroke-width="1" stroke-opacity="0.5"/>
+    <line x1="580" y1="182" x2="470" y2="200" stroke="#f59e0b" stroke-width="1" stroke-opacity="0.5"/>
+    <line x1="580" y1="242" x2="470" y2="215" stroke="#f59e0b" stroke-width="1" stroke-opacity="0.5"/>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- BOTTOM: Modern                              -->
+    <!-- ═══════════════════════════════════════════ -->
+    <text x="400" y="300" text-anchor="middle" fill="#64748b" font-size="10" letter-spacing="1">MODERNE</text>
+    
+    <!-- GraphQL -->
+    <g transform="translate(200, 330)">
+      <rect x="-85" y="0" width="170" height="55" rx="5" fill="#0f1520" stroke="#ef4444" stroke-width="1.5" filter="url(#glow-red-sf)"/>
+      <text x="0" y="18" text-anchor="middle" fill="#ef4444" font-size="11" font-weight="600">GraphQL</text>
+      <text x="0" y="35" text-anchor="middle" fill="#64748b" font-size="9" style="font-family: monospace;">variables: {id: 123}</text>
+      <text x="0" y="48" text-anchor="middle" fill="#64748b" font-size="8">+ mutations, aliases</text>
+    </g>
+    
+    <!-- JWT -->
+    <g transform="translate(400, 330)">
+      <rect x="-85" y="0" width="170" height="55" rx="5" fill="#0f1520" stroke="#ef4444" stroke-width="1.5" filter="url(#glow-red-sf)"/>
+      <text x="0" y="18" text-anchor="middle" fill="#ef4444" font-size="11" font-weight="600">JWT Claims</text>
+      <text x="0" y="35" text-anchor="middle" fill="#64748b" font-size="9" style="font-family: monospace;">{"sub": "123", ...}</text>
+      <text x="0" y="48" text-anchor="middle" fill="#64748b" font-size="8">si non vérifié côté serveur</text>
+    </g>
+    
+    <!-- WebSocket -->
+    <g transform="translate(600, 330)">
+      <rect x="-85" y="0" width="170" height="55" rx="5" fill="#0f1520" stroke="#ef4444" stroke-width="1.5" filter="url(#glow-red-sf)"/>
+      <text x="0" y="18" text-anchor="middle" fill="#ef4444" font-size="11" font-weight="600">WebSocket</text>
+      <text x="0" y="35" text-anchor="middle" fill="#64748b" font-size="9" style="font-family: monospace;">{"action": "get", ...}</text>
+      <text x="0" y="48" text-anchor="middle" fill="#64748b" font-size="8">messages JSON</text>
+    </g>
+    
+    <!-- Lines to center -->
+    <line x1="200" y1="330" x2="380" y2="235" stroke="#ef4444" stroke-width="1" stroke-opacity="0.5"/>
+    <line x1="400" y1="330" x2="400" y2="235" stroke="#ef4444" stroke-width="1" stroke-opacity="0.5"/>
+    <line x1="600" y1="330" x2="420" y2="235" stroke="#ef4444" stroke-width="1" stroke-opacity="0.5"/>
+  </svg>
+</div>
+
+<style>
+  .diagram-container {
+    margin: 2rem 0;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+  }
+  
+  .surfaces-diagram {
+    width: 100%;
+    min-width: 600px;
+    max-width: 800px;
+    margin: 0 auto;
+    display: block;
+  }
+</style>

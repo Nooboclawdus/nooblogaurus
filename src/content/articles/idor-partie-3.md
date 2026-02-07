@@ -16,6 +16,8 @@ Le problème c'est que les apps en 2026, c'est du GraphQL, des WebSockets, des S
 
 Cette partie, c'est pour combler ce trou.
 
+<!-- DIAGRAM:surfaces -->
+
 ---
 
 ## Pourquoi les devs créent des IDOR

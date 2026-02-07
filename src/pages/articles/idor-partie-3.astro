@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import IDORSurfacesDiagram from '../../components/diagrams/IDORSurfacesDiagram.astro';
 import { marked } from 'marked';
 import hljs from 'highlight.js';
 import fs from 'fs';
@@ -99,7 +100,12 @@ renderer.blockquote = function({ raw, text }) {
 };
 
 marked.use({ renderer });
-const htmlContent = marked.parse(mdContent);
+
+// Split content at diagram marker
+const DIAGRAM_MARKER = '<!-- DIAGRAM:surfaces -->';
+const [contentBefore, contentAfter] = mdContent.split(DIAGRAM_MARKER);
+const htmlBefore = marked.parse(contentBefore);
+const htmlAfter = contentAfter ? marked.parse(contentAfter) : '';
 ---
 
 <Layout title={article.title} description={article.description}>
@@ -138,7 +144,14 @@ const htmlContent = marked.parse(mdContent);
       </header>
       
       <!-- Content -->
-      <div class="prose-article" set:html={htmlContent} />
+      <!-- Content Before Diagram -->
+      <div class="prose-article" set:html={htmlBefore} />
+      
+      <!-- Diagram -->
+      <IDORSurfacesDiagram />
+      
+      <!-- Content After Diagram -->
+      {htmlAfter && <div class="prose-article" set:html={htmlAfter} />}
       
       <!-- Back link -->
       <div class="mt-12 pt-8 border-t border-[var(--color-border)]">
