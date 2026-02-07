@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import IDORMethodDiagram from '../../components/diagrams/IDORMethodDiagram.astro';
 import { marked } from 'marked';
 import hljs from 'highlight.js';
 import fs from 'fs';
@@ -136,6 +137,9 @@ const htmlContent = marked.parse(mdContent);
           <span>{article.readingTime} de lecture</span>
         </div>
       </header>
+      
+      <!-- Diagram -->
+      <IDORMethodDiagram />
       
       <!-- Content -->
       <div class="prose-article" set:html={htmlContent} />
