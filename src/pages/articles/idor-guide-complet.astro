@@ -56,12 +56,38 @@ while ((match = headingRegex.exec(mdContent)) !== null) {
   });
 }
 
-// Custom renderer to add IDs to headings
+// Custom renderer to add IDs to headings and style callouts
 const renderer = new marked.Renderer();
 renderer.heading = function({ tokens, depth }) {
   const text = tokens.map(t => t.raw).join('');
   const slug = slugify(text);
   return `<h${depth} id="${slug}">${text}</h${depth}>`;
+};
+
+renderer.blockquote = function({ raw, text }) {
+  // Check for callout syntax: > [!TYPE]\n> content
+  const calloutMatch = text.match(/^\s*\[!(TIP|WARNING|INFO|NOTE)\]\s*([\s\S]*)/i);
+  if (calloutMatch) {
+    const type = calloutMatch[1].toLowerCase();
+    const content = calloutMatch[2].trim();
+    const icons: Record<string, string> = {
+      tip: '💡',
+      warning: '⚠️',
+      info: 'ℹ️',
+      note: '📝'
+    };
+    const titles: Record<string, string> = {
+      tip: 'Tip',
+      warning: 'Attention',
+      info: 'Info',
+      note: 'Note'
+    };
+    return `<div class="callout callout-${type}">
+      <div class="callout-title">${icons[type]} ${titles[type]}</div>
+      <div class="callout-content">${marked.parse(content)}</div>
+    </div>`;
+  }
+  return `<blockquote>${text}</blockquote>`;
 };
 
 marked.use({ renderer });
@@ -325,6 +351,64 @@ const htmlContent = marked.parse(mdContent);
   
   .prose-article em {
     font-style: italic;
+  }
+
+  /* Callout boxes */
+  .callout {
+    margin: 1.5rem 0;
+    padding: 1rem 1.25rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid;
+  }
+
+  .callout-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .callout-content p {
+    margin-bottom: 0.5rem;
+  }
+
+  .callout-content p:last-child {
+    margin-bottom: 0;
+  }
+
+  .callout-tip {
+    background: rgba(34, 197, 94, 0.1);
+    border-color: rgb(34, 197, 94);
+  }
+
+  .callout-tip .callout-title {
+    color: rgb(34, 197, 94);
+  }
+
+  .callout-warning {
+    background: rgba(234, 179, 8, 0.1);
+    border-color: rgb(234, 179, 8);
+  }
+
+  .callout-warning .callout-title {
+    color: rgb(234, 179, 8);
+  }
+
+  .callout-info {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: rgb(59, 130, 246);
+  }
+
+  .callout-info .callout-title {
+    color: rgb(59, 130, 246);
+  }
+
+  .callout-note {
+    background: rgba(168, 85, 247, 0.1);
+    border-color: rgb(168, 85, 247);
+  }
+
+  .callout-note .callout-title {
+    color: rgb(168, 85, 247);
   }
 </style>
 

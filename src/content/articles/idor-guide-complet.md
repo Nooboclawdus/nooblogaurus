@@ -2,6 +2,9 @@
 
 *Ou comment j'ai arrêté de lire "changez le 1 en 2" et commencé à trouver des trucs.*
 
+> [!TIP]
+> **TL;DR** — Ce que tu vas apprendre : la méthode 2-comptes bien organisée, automatiser avec Autorize (Caido), les 6 erreurs classiques qui te font perdre du temps, et comment escalader l'impact de tes findings. Skip les sections que tu maîtrises déjà.
+
 ---
 
 Si t'es là, c'est que t'as probablement déjà lu 47 articles qui t'expliquent qu'une IDOR c'est quand tu changes `id=1` en `id=2`. Bravo, tu sais lire une URL. Maintenant on va parler des trucs que personne t'explique : pourquoi tu rates des IDOR, comment automatiser sans te faire ban, et ce que les devs font de travers pour que ça existe encore en 2026.
@@ -29,11 +32,12 @@ Avant d'aller plus loin, une mise au point importante. En bug bounty, tu testes 
 - Modifier ses propres ressources pour comprendre les endpoints
 - Vérifier qu'un endpoint destructif est *atteignable* sans faire de dégâts
 
-**Ce qu'on ne fait PAS :**
-- Supprimer les ressources d'autres utilisateurs
-- Modifier les données d'autres utilisateurs (sauf cas très spécifiques et réversibles)
-- Énumérer massivement des données sensibles
-- Exfiltrer des données au-delà de ce qui est nécessaire pour la preuve
+> [!WARNING]
+> **Ce qu'on ne fait PAS :**
+> - Supprimer les ressources d'autres utilisateurs
+> - Modifier les données d'autres utilisateurs (sauf cas très spécifiques et réversibles)
+> - Énumérer massivement des données sensibles
+> - Exfiltrer des données au-delà de ce qui est nécessaire pour la preuve
 
 **Pour les actions destructives (DELETE, certains PUT) :**
 
@@ -102,6 +106,9 @@ La solution qui marche :
 4. **Ou [PwnFox](https://github.com/yeswehack/PwnFox)** — extension Firefox qui utilise les Multi-Account Containers pour isoler tes sessions. Chaque container a ses propres cookies, et bonus : le trafic est coloré dans Burp/Caido selon le container. Tu peux avoir 5 comptes dans le même navigateur sans te mélanger.
 
 L'idée c'est d'avoir une séparation claire impossible à confondre. Quand tu regardes Firefox, c'est A. Quand tu regardes Chrome, c'est B. Ou avec PwnFox : container rouge = victime, container bleu = attaquant. Pas de question à se poser.
+
+> [!TIP]
+> **Mon setup préféré** : PwnFox avec 2 containers (rouge = victime, bleu = attaquant). Le trafic est automatiquement coloré dans ton proxy — impossible de confondre les sessions.
 
 **Le proxy au milieu**
 
@@ -178,6 +185,9 @@ Concrètement, quand tu navigues avec ton compte high-privilege, Autorize génè
 - **No-Auth** : la même requête sans aucune authentification
 
 En comparant les réponses, il détecte automatiquement les cas où un utilisateur moins privilégié (ou pas authentifié du tout) peut accéder aux mêmes ressources.
+
+> [!INFO]
+> **Burp users** : Autorize existe aussi pour Burp Suite (extension populaire). La config est similaire — le concept reste le même.
 
 ### Configuration étape par étape
 
@@ -475,6 +485,9 @@ Crée un workflow systématique :
 4. Compare avant/après
 
 ### Erreur 4 : Reporter trop vite
+
+> [!NOTE]
+> **C'est l'erreur qui coûte le plus cher en bounty.** Tu trouves une IDOR, tu soumets vite, et tu passes à côté de l'escalade qui aurait multiplié le payout par 5.
 
 **Le problème**
 
