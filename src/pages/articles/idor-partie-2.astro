@@ -1,6 +1,8 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import AutorizeDiagram from '../../components/diagrams/AutorizeDiagram.astro';
+import ImpactHierarchyDiagram from '../../components/diagrams/ImpactHierarchyDiagram.astro';
+import MultiTenantDiagram from '../../components/diagrams/MultiTenantDiagram.astro';
 import { marked } from 'marked';
 import hljs from 'highlight.js';
 import fs from 'fs';
@@ -58,7 +60,7 @@ while ((match = headingRegex.exec(mdContent)) !== null) {
   });
 }
 
-// Custom renderer to add IDs to headings, syntax highlighting, and style callouts
+// Custom renderer
 const renderer = new marked.Renderer();
 
 renderer.code = function({ text, lang }) {
@@ -74,7 +76,6 @@ renderer.heading = function({ tokens, depth }) {
 };
 
 renderer.blockquote = function({ raw, text }) {
-  // Check for callout syntax: > [!TYPE]\n> content
   const calloutMatch = text.match(/^\s*\[!(TIP|WARNING|INFO|NOTE)\]\s*([\s\S]*)/i);
   if (calloutMatch) {
     const type = calloutMatch[1].toLowerCase();
@@ -101,11 +102,50 @@ renderer.blockquote = function({ raw, text }) {
 
 marked.use({ renderer });
 
-// Split content at diagram marker
-const DIAGRAM_MARKER = '<!-- DIAGRAM:autorize -->';
-const [contentBefore, contentAfter] = mdContent.split(DIAGRAM_MARKER);
-const htmlBefore = marked.parse(contentBefore);
-const htmlAfter = contentAfter ? marked.parse(contentAfter) : '';
+// Split content at diagram markers
+const DIAGRAM_MARKERS = ['<!-- DIAGRAM:autorize -->', '<!-- DIAGRAM:impact -->', '<!-- DIAGRAM:multitenant -->'];
+
+interface ContentSection {
+  type: 'html' | 'diagram';
+  content?: string;
+  diagram?: string;
+}
+
+function splitAtMarkers(content: string, markers: string[]): ContentSection[] {
+  const sections: ContentSection[] = [];
+  let remaining = content;
+  
+  while (remaining.length > 0) {
+    let earliestMarker = null;
+    let earliestIndex = -1;
+    
+    for (const marker of markers) {
+      const index = remaining.indexOf(marker);
+      if (index !== -1 && (earliestIndex === -1 || index < earliestIndex)) {
+        earliestIndex = index;
+        earliestMarker = marker;
+      }
+    }
+    
+    if (earliestIndex === -1) {
+      sections.push({ type: 'html', content: marked.parse(remaining) as string });
+      break;
+    }
+    
+    if (earliestIndex > 0) {
+      sections.push({ type: 'html', content: marked.parse(remaining.slice(0, earliestIndex)) as string });
+    }
+    
+    const diagramName = earliestMarker!.match(/DIAGRAM:(\w+)/)?.[1] || '';
+    sections.push({ type: 'diagram', diagram: diagramName });
+    
+    remaining = remaining.slice(earliestIndex + earliestMarker!.length);
+  }
+  
+  return sections;
+}
+
+const contentSections = splitAtMarkers(mdContent, DIAGRAM_MARKERS);
 ---
 
 <Layout title={article.title} description={article.description}>
@@ -143,15 +183,18 @@ const htmlAfter = contentAfter ? marked.parse(contentAfter) : '';
         </div>
       </header>
       
-      <!-- Content -->
-      <!-- Content Before Diagram -->
-      <div class="prose-article" set:html={htmlBefore} />
-      
-      <!-- Diagram -->
-      <AutorizeDiagram />
-      
-      <!-- Content After Diagram -->
-      {htmlAfter && <div class="prose-article" set:html={htmlAfter} />}
+      <!-- Content with diagrams -->
+      {contentSections.map(section => {
+        if (section.type === 'html') {
+          return <div class="prose-article" set:html={section.content} />;
+        } else if (section.diagram === 'autorize') {
+          return <AutorizeDiagram />;
+        } else if (section.diagram === 'impact') {
+          return <ImpactHierarchyDiagram />;
+        } else if (section.diagram === 'multitenant') {
+          return <MultiTenantDiagram />;
+        }
+      })}
       
       <!-- Back link -->
       <div class="mt-12 pt-8 border-t border-[var(--color-border)]">
@@ -374,7 +417,6 @@ const htmlAfter = contentAfter ? marked.parse(contentAfter) : '';
     font-style: italic;
   }
 
-  /* Callout boxes */
   .callout {
     margin: 1.5rem 0;
     padding: 1rem 1.25rem;
@@ -434,7 +476,6 @@ const htmlAfter = contentAfter ? marked.parse(contentAfter) : '';
 </style>
 
 <script>
-  // Highlight current section in TOC
   document.addEventListener('DOMContentLoaded', () => {
     const tocLinks = document.querySelectorAll('.toc-link');
     const headings = document.querySelectorAll('.prose-article h2, .prose-article h3');

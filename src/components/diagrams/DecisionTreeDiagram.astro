@@ -1,0 +1,183 @@
+---
+// Diagramme: Arbre de décision IDOR
+// Continuer vs Abandonner selon les signaux
+---
+
+<div class="diagram-container">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" class="decision-diagram">
+    <defs>
+      <filter id="glow-cyan-dt" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feFlood flood-color="#06b6d4" flood-opacity="0.4"/>
+        <feComposite in2="blur" operator="in"/>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glow-green-dt" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feFlood flood-color="#22c55e" flood-opacity="0.4"/>
+        <feComposite in2="blur" operator="in"/>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glow-red-dt" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feFlood flood-color="#ef4444" flood-opacity="0.4"/>
+        <feComposite in2="blur" operator="in"/>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glow-amber-dt" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feFlood flood-color="#f59e0b" flood-opacity="0.4"/>
+        <feComposite in2="blur" operator="in"/>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      
+      <pattern id="grid-dt" width="25" height="25" patternUnits="userSpaceOnUse">
+        <path d="M 25 0 L 0 0 0 25" fill="none" stroke="rgba(100,100,140,0.06)" stroke-width="0.5"/>
+      </pattern>
+      
+      <marker id="arrow-dt" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#64748b" stroke-width="1.5"/>
+      </marker>
+    </defs>
+    
+    <!-- Background -->
+    <rect width="800" height="520" fill="#0c0c14" rx="8"/>
+    <rect width="800" height="520" fill="url(#grid-dt)" rx="8"/>
+    
+    <!-- Title -->
+    <text x="400" y="30" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="600">Arbre de Décision : Continuer ou Pivoter ?</text>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- START NODE                                 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <g transform="translate(400, 55)">
+      <rect x="-100" y="0" width="200" height="45" rx="6" fill="#0f1520" stroke="#06b6d4" stroke-width="2" filter="url(#glow-cyan-dt)"/>
+      <text x="0" y="28" text-anchor="middle" fill="#06b6d4" font-size="12" font-weight="700">Test IDOR initial</text>
+    </g>
+    
+    <!-- Arrow to first decision -->
+    <line x1="400" y1="100" x2="400" y2="130" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow-dt)"/>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- DECISION 1: IDs présents ?                 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <g transform="translate(400, 140)">
+      <polygon points="0,-30 100,0 0,30 -100,0" fill="#0f1520" stroke="#f59e0b" stroke-width="2" filter="url(#glow-amber-dt)"/>
+      <text x="0" y="5" text-anchor="middle" fill="#f59e0b" font-size="10" font-weight="600">IDs visibles ?</text>
+    </g>
+    
+    <!-- NO branch - left -->
+    <line x1="300" y1="140" x2="180" y2="200" stroke="#64748b" stroke-width="1.5"/>
+    <text x="220" y="165" fill="#94a3b8" font-size="9">Non</text>
+    
+    <!-- YES branch - right -->
+    <line x1="500" y1="140" x2="620" y2="200" stroke="#64748b" stroke-width="1.5"/>
+    <text x="580" y="165" fill="#94a3b8" font-size="9">Oui</text>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- LEFT BRANCH: Pas d'IDs                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <g transform="translate(140, 210)">
+      <rect x="-110" y="0" width="220" height="80" rx="6" fill="#0f1520" stroke="#64748b" stroke-width="1.5"/>
+      <text x="0" y="22" text-anchor="middle" fill="#94a3b8" font-size="10" font-weight="600">Chercher ailleurs</text>
+      <text x="-95" y="42" fill="#64748b" font-size="8">• WebSocket messages</text>
+      <text x="-95" y="56" fill="#64748b" font-size="8">• localStorage / cookies</text>
+      <text x="-95" y="70" fill="#64748b" font-size="8">• API responses (JSON)</text>
+    </g>
+    
+    <!-- Arrow loop back up -->
+    <path d="M 30 250 Q -20 180 300 140" fill="none" stroke="#64748b" stroke-width="1" stroke-dasharray="4,2"/>
+    <text x="60" y="180" fill="#475569" font-size="8">retry</text>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- RIGHT BRANCH: IDs found                    -->
+    <!-- ═══════════════════════════════════════════ -->
+    <g transform="translate(620, 210)">
+      <polygon points="0,-25 80,0 0,25 -80,0" fill="#0f1520" stroke="#f59e0b" stroke-width="2"/>
+      <text x="0" y="5" text-anchor="middle" fill="#f59e0b" font-size="9" font-weight="600">Type d'ID ?</text>
+    </g>
+    
+    <!-- Branches from type check -->
+    <line x1="540" y1="210" x2="450" y2="280" stroke="#64748b" stroke-width="1.5"/>
+    <text x="470" y="245" fill="#94a3b8" font-size="8">Séquentiel</text>
+    
+    <line x1="700" y1="210" x2="750" y2="280" stroke="#64748b" stroke-width="1.5"/>
+    <text x="740" y="245" fill="#94a3b8" font-size="8">UUIDv4</text>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SEQUENTIAL PATH - High priority            -->
+    <!-- ═══════════════════════════════════════════ -->
+    <g transform="translate(400, 290)">
+      <rect x="-100" y="0" width="200" height="70" rx="6" fill="#052e16" stroke="#22c55e" stroke-width="2" filter="url(#glow-green-dt)"/>
+      <text x="0" y="22" text-anchor="middle" fill="#22c55e" font-size="11" font-weight="700">🎯 Priorité haute</text>
+      <text x="0" y="42" text-anchor="middle" fill="#86efac" font-size="9">Énumérer id±1, id±10</text>
+      <text x="0" y="58" text-anchor="middle" fill="#4ade80" font-size="8">Forte probabilité de vuln</text>
+    </g>
+    
+    <!-- Arrow to success -->
+    <line x1="400" y1="360" x2="400" y2="400" stroke="#22c55e" stroke-width="1.5"/>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- UUID PATH - Check deeper                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <g transform="translate(750, 290)">
+      <polygon points="0,-25 70,0 0,25 -70,0" fill="#0f1520" stroke="#f59e0b" stroke-width="2"/>
+      <text x="0" y="5" text-anchor="middle" fill="#f59e0b" font-size="9" font-weight="600">Fuite UUID ?</text>
+    </g>
+    
+    <!-- UUID sub-branches -->
+    <line x1="680" y1="290" x2="620" y2="360" stroke="#64748b" stroke-width="1.5"/>
+    <text x="625" y="330" fill="#22c55e" font-size="8">Oui</text>
+    
+    <line x1="750" y1="315" x2="750" y2="380" stroke="#64748b" stroke-width="1.5"/>
+    <text x="765" y="350" fill="#ef4444" font-size="8">Non</text>
+    
+    <!-- UUID leaked - continue -->
+    <g transform="translate(580, 370)">
+      <rect x="-70" y="0" width="140" height="50" rx="4" fill="#052e16" stroke="#22c55e" stroke-width="1.5"/>
+      <text x="0" y="20" text-anchor="middle" fill="#22c55e" font-size="9" font-weight="600">Continuer</text>
+      <text x="0" y="36" text-anchor="middle" fill="#64748b" font-size="7">UUID dans logs/emails</text>
+    </g>
+    
+    <!-- UUID not leaked - pivot -->
+    <g transform="translate(750, 390)">
+      <rect x="-70" y="0" width="140" height="50" rx="4" fill="#1f0a0a" stroke="#ef4444" stroke-width="1.5" filter="url(#glow-red-dt)"/>
+      <text x="0" y="20" text-anchor="middle" fill="#ef4444" font-size="9" font-weight="600">Pivoter</text>
+      <text x="0" y="36" text-anchor="middle" fill="#64748b" font-size="7">UUID v4 = dead end</text>
+    </g>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SUCCESS PATH                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <g transform="translate(400, 410)">
+      <rect x="-130" y="0" width="260" height="80" rx="6" fill="#0f1520" stroke="#22c55e" stroke-width="2" filter="url(#glow-green-dt)"/>
+      <text x="0" y="25" text-anchor="middle" fill="#22c55e" font-size="12" font-weight="700">Tester les endpoints</text>
+      <text x="-110" y="45" fill="#86efac" font-size="8">✓ GET /users/TARGET_ID</text>
+      <text x="-110" y="60" fill="#86efac" font-size="8">✓ PUT /users/TARGET_ID/settings</text>
+      <text x="-110" y="75" fill="#64748b" font-size="8">Documenter réponses 200 vs 403</text>
+    </g>
+    
+    <!-- Time budget indicator -->
+    <g transform="translate(70, 480)">
+      <rect x="0" y="0" width="180" height="30" rx="4" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+      <text x="90" y="12" text-anchor="middle" fill="#94a3b8" font-size="8">Budget temps par endpoint:</text>
+      <text x="90" y="24" text-anchor="middle" fill="#f59e0b" font-size="9" font-weight="600">15-30 min max</text>
+    </g>
+  </svg>
+</div>
+
+<style>
+  .diagram-container {
+    margin: 2rem 0;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+  }
+  
+  .decision-diagram {
+    width: 100%;
+    min-width: 600px;
+    max-width: 800px;
+    margin: 0 auto;
+    display: block;
+  }
+</style>

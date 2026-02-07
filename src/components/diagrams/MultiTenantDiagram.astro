@@ -1,0 +1,167 @@
+---
+// Diagramme: IDOR Multi-tenant
+// Organisation A vs Organisation B - isolation des données
+---
+
+<div class="diagram-container">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" class="multitenant-diagram">
+    <defs>
+      <filter id="glow-blue" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feFlood flood-color="#3b82f6" flood-opacity="0.4"/>
+        <feComposite in2="blur" operator="in"/>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glow-purple" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feFlood flood-color="#a855f7" flood-opacity="0.4"/>
+        <feComposite in2="blur" operator="in"/>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glow-red-mt" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="4" result="blur"/>
+        <feFlood flood-color="#ef4444" flood-opacity="0.5"/>
+        <feComposite in2="blur" operator="in"/>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      
+      <pattern id="grid-mt" width="25" height="25" patternUnits="userSpaceOnUse">
+        <path d="M 25 0 L 0 0 0 25" fill="none" stroke="rgba(100,100,140,0.06)" stroke-width="0.5"/>
+      </pattern>
+      
+      <marker id="arrow-mt" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#ef4444" stroke-width="2"/>
+      </marker>
+      
+      <marker id="arrow-block" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#22c55e" stroke-width="2"/>
+      </marker>
+    </defs>
+    
+    <!-- Background -->
+    <rect width="800" height="420" fill="#0c0c14" rx="8"/>
+    <rect width="800" height="420" fill="url(#grid-mt)" rx="8"/>
+    
+    <!-- Title -->
+    <text x="400" y="30" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="600">IDOR Multi-tenant : Isolation des Organisations</text>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- ORG A - Left Side                          -->
+    <!-- ═══════════════════════════════════════════ -->
+    <g transform="translate(175, 60)">
+      <!-- Org container -->
+      <rect x="-140" y="0" width="280" height="280" rx="8" fill="#0f1520" stroke="#3b82f6" stroke-width="2" filter="url(#glow-blue)"/>
+      <text x="0" y="25" text-anchor="middle" fill="#3b82f6" font-size="13" font-weight="700">ORGANISATION A</text>
+      <text x="0" y="42" text-anchor="middle" fill="#60a5fa" font-size="9">tenant_id: org_a_12345</text>
+      <line x1="-120" y1="55" x2="120" y2="55" stroke="#1e40af" stroke-width="1"/>
+      
+      <!-- Users -->
+      <g transform="translate(-70, 75)">
+        <rect x="-45" y="0" width="90" height="55" rx="4" fill="#1e3a5f" stroke="#2563eb" stroke-width="1"/>
+        <text x="0" y="20" text-anchor="middle" fill="#93c5fd" font-size="10" font-weight="600">Alice</text>
+        <text x="0" y="35" text-anchor="middle" fill="#60a5fa" font-size="8">admin</text>
+        <text x="0" y="48" text-anchor="middle" fill="#3b82f6" font-size="7">user_001</text>
+      </g>
+      
+      <g transform="translate(70, 75)">
+        <rect x="-45" y="0" width="90" height="55" rx="4" fill="#1e3a5f" stroke="#2563eb" stroke-width="1"/>
+        <text x="0" y="20" text-anchor="middle" fill="#93c5fd" font-size="10" font-weight="600">Bob</text>
+        <text x="0" y="35" text-anchor="middle" fill="#60a5fa" font-size="8">member</text>
+        <text x="0" y="48" text-anchor="middle" fill="#3b82f6" font-size="7">user_002</text>
+      </g>
+      
+      <!-- Resources -->
+      <text x="0" y="155" text-anchor="middle" fill="#64748b" font-size="9">Ressources</text>
+      
+      <g transform="translate(-70, 165)">
+        <rect x="-50" y="0" width="100" height="40" rx="4" fill="#0c1929" stroke="#1d4ed8" stroke-width="1"/>
+        <text x="0" y="17" text-anchor="middle" fill="#bfdbfe" font-size="9">doc_a_001</text>
+        <text x="0" y="32" text-anchor="middle" fill="#3b82f6" font-size="7">Contrat Q1</text>
+      </g>
+      
+      <g transform="translate(70, 165)">
+        <rect x="-50" y="0" width="100" height="40" rx="4" fill="#0c1929" stroke="#1d4ed8" stroke-width="1"/>
+        <text x="0" y="17" text-anchor="middle" fill="#bfdbfe" font-size="9">doc_a_002</text>
+        <text x="0" y="32" text-anchor="middle" fill="#3b82f6" font-size="7">Facturation</text>
+      </g>
+      
+      <!-- Secrets -->
+      <g transform="translate(0, 225)">
+        <rect x="-80" y="0" width="160" height="35" rx="4" fill="#1e1b4b" stroke="#4338ca" stroke-width="1"/>
+        <text x="0" y="14" text-anchor="middle" fill="#a5b4fc" font-size="8">API Keys / Secrets</text>
+        <text x="0" y="28" text-anchor="middle" fill="#6366f1" font-size="7">sk_live_A_xxxxx</text>
+      </g>
+    </g>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- ORG B - Right Side                         -->
+    <!-- ═══════════════════════════════════════════ -->
+    <g transform="translate(625, 60)">
+      <!-- Org container -->
+      <rect x="-140" y="0" width="280" height="280" rx="8" fill="#0f1520" stroke="#a855f7" stroke-width="2" filter="url(#glow-purple)"/>
+      <text x="0" y="25" text-anchor="middle" fill="#a855f7" font-size="13" font-weight="700">ORGANISATION B</text>
+      <text x="0" y="42" text-anchor="middle" fill="#c084fc" font-size="9">tenant_id: org_b_67890</text>
+      <line x1="-120" y1="55" x2="120" y2="55" stroke="#6b21a8" stroke-width="1"/>
+      
+      <!-- Attacker -->
+      <g transform="translate(0, 75)">
+        <rect x="-45" y="0" width="90" height="55" rx="4" fill="#4a1d6b" stroke="#9333ea" stroke-width="2"/>
+        <text x="0" y="20" text-anchor="middle" fill="#e9d5ff" font-size="10" font-weight="600">Eve</text>
+        <text x="0" y="35" text-anchor="middle" fill="#d946ef" font-size="8">attaquant</text>
+        <text x="0" y="48" text-anchor="middle" fill="#a855f7" font-size="7">user_999</text>
+      </g>
+      
+      <!-- Eve's limited resources -->
+      <text x="0" y="155" text-anchor="middle" fill="#64748b" font-size="9">Ressources</text>
+      
+      <g transform="translate(0, 165)">
+        <rect x="-50" y="0" width="100" height="40" rx="4" fill="#1a0a29" stroke="#7e22ce" stroke-width="1"/>
+        <text x="0" y="17" text-anchor="middle" fill="#e9d5ff" font-size="9">doc_b_001</text>
+        <text x="0" y="32" text-anchor="middle" fill="#a855f7" font-size="7">Notes perso</text>
+      </g>
+      
+      <!-- Eve's secrets -->
+      <g transform="translate(0, 225)">
+        <rect x="-80" y="0" width="160" height="35" rx="4" fill="#2e1065" stroke="#7c3aed" stroke-width="1"/>
+        <text x="0" y="14" text-anchor="middle" fill="#c4b5fd" font-size="8">API Keys / Secrets</text>
+        <text x="0" y="28" text-anchor="middle" fill="#8b5cf6" font-size="7">sk_live_B_yyyyy</text>
+      </g>
+    </g>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- ATTACK VECTOR                              -->
+    <!-- ═══════════════════════════════════════════ -->
+    <g transform="translate(400, 355)">
+      <rect x="-180" y="0" width="360" height="50" rx="6" fill="#1f0a0a" stroke="#ef4444" stroke-width="2" filter="url(#glow-red-mt)"/>
+      <text x="0" y="20" text-anchor="middle" fill="#ef4444" font-size="11" font-weight="700">ATTAQUE CROSS-TENANT</text>
+      <text x="0" y="38" text-anchor="middle" fill="#fca5a5" font-size="9">GET /api/documents/doc_a_001   (avec token de Eve)</text>
+    </g>
+    
+    <!-- Attack arrow from Eve to Org A -->
+    <path d="M 580 140 Q 400 100 220 180" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#arrow-mt)"/>
+    <text x="400" y="90" text-anchor="middle" fill="#ef4444" font-size="10" font-weight="600">?</text>
+    
+    <!-- Security barrier in middle -->
+    <g transform="translate(400, 140)">
+      <rect x="-25" y="0" width="50" height="180" rx="4" fill="none" stroke="#22c55e" stroke-width="2" stroke-dasharray="8,4"/>
+      <text x="0" y="95" text-anchor="middle" fill="#22c55e" font-size="20">🛡️</text>
+      <text x="0" y="120" text-anchor="middle" fill="#22c55e" font-size="8" font-weight="600">ISOLATION</text>
+    </g>
+  </svg>
+</div>
+
+<style>
+  .diagram-container {
+    margin: 2rem 0;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+  }
+  
+  .multitenant-diagram {
+    width: 100%;
+    min-width: 600px;
+    max-width: 800px;
+    margin: 0 auto;
+    display: block;
+  }
+</style>

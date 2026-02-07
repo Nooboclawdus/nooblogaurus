@@ -88,6 +88,8 @@ Le middleware vérifie que t'es connecté. L'endpoint supprime le post. Personne
 
 GraphQL change la donne. Au lieu d'appeler des endpoints fixes, le client construit sa propre requête et demande ce qu'il veut. C'est puissant pour le dev. C'est un cauchemar pour la sécurité.
 
+<!-- DIAGRAM:graphql -->
+
 ### Le problème fondamental
 
 Le frontend demande peut-être juste ton nom et ton email via la query `me`. Mais le schéma GraphQL expose probablement beaucoup plus : une query `user(id)` qui prend n'importe quel ID, une query `users` qui liste tout le monde, et des champs comme `phone`, `creditCards`, ou même `passwordHash` que le frontend n'utilise jamais mais qui sont quand même accessibles.
@@ -209,6 +211,8 @@ Pour tester, intercepte les requêtes quand tu déclenches l'action depuis le fr
 
 C'est vrai pour les UUID v4, qui sont aléatoires. C'est faux pour les UUID v1, qui sont basés sur le temps.
 
+<!-- DIAGRAM:uuid -->
+
 ### La différence
 
 Un UUID ressemble à `550e8400-e29b-11d4-a716-446655440000`. Le 13ème caractère te dit la version. Un `1` à cette position, c'est UUID v1 (basé sur le temps). Un `4`, c'est UUID v4 (aléatoire).
@@ -252,6 +256,8 @@ Les fonctionnalités de partage aussi. "Inviter un user dans l'org", "Partager u
 ## Quand lâcher l'affaire
 
 L'IDOR c'est bien, mais faut savoir quand passer à autre chose.
+
+<!-- DIAGRAM:decision -->
 
 Continue si les IDs sont séquentiels (`user_id=1, 2, 3...`) parce que l'énumération est triviale et y'a forcément des trucs à trouver. Continue si l'app utilise de l'auth maison (JWT custom, sessions bricolées) parce que le code custom a plus de chances d'avoir des trous que les frameworks matures. Continue si les erreurs sont verbeuses — une app qui te dit "User 123 not found" vs "Access denied to user 456" fait son access control au cas par cas, pas de manière systématique. Continue si c'est une app legacy ou une startup early-stage — les vieilles apps ont de la dette technique, les startups ont sacrifié la sécurité pour la vitesse.
 

@@ -117,6 +117,8 @@ Tu trouves que tu peux lire le profil de quelqu'un d'autre. Victoire. Tu rédige
 
 Tu as reporté le symptôme, pas l'impact maximal. En t'arrêtant à la première IDOR trouvée, tu as peut-être raté une IDOR de modification sur le même endpoint, une escalade vers des données plus sensibles, une chaîne d'exploitation avec d'autres vulns.
 
+<!-- DIAGRAM:impact -->
+
 Pas toutes les IDOR se valent. La lecture de données peu sensibles comme le username ou l'avatar c'est faible. La lecture de données sensibles comme l'email ou le téléphone c'est un peu mieux. La lecture de données critiques comme des documents privés ou des credentials c'est déjà sérieux. La modification de données c'est encore mieux. La modification des permissions ou des rôles c'est critique. L'account takeover complet c'est le jackpot.
 
 Avant de reporter, explore l'escalade. Si tu peux lire avec GET, l'endpoint PUT est-il accessible ? Tu as accès aux données d'un user lambda, peux-tu accéder aux données d'un admin ? Cherche des IDs de comptes admin qui sont souvent les premiers créés (1, 2, 3) ou des endpoints spécifiques comme `/api/admin/users`. Tu vois des données, peux-tu les utiliser pour autre chose ? Si tu leaks un reset token, tu peux prendre le contrôle du compte.
@@ -128,6 +130,8 @@ Parfois une IDOR seule a un impact faible, mais combinée avec une autre vuln ç
 ## Oublier le multi-tenant
 
 Tu testes une app SaaS, tu as ton compte dans l'organisation MonOrg. Tu changes des IDs utilisateurs, tu trouves rien, tu passes à autre chose. Tu as oublié de tester l'isolation entre organisations.
+
+<!-- DIAGRAM:multitenant -->
 
 Les apps SaaS ont généralement plusieurs niveaux d'isolation. La plateforme contient des organisations, chaque organisation contient des users. Les users dans la même org peuvent peut-être voir leurs données mutuelles selon les permissions. Mais ils ne devraient JAMAIS voir les données d'une autre org.
 

@@ -1,0 +1,161 @@
+---
+// Diagramme: Hiérarchie d'impact IDOR
+// Low → Medium → High → Critical avec exemples
+---
+
+<div class="diagram-container">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" class="impact-diagram">
+    <defs>
+      <filter id="glow-gray" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feFlood flood-color="#64748b" flood-opacity="0.4"/>
+        <feComposite in2="blur" operator="in"/>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glow-yellow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feFlood flood-color="#eab308" flood-opacity="0.4"/>
+        <feComposite in2="blur" operator="in"/>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glow-orange" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feFlood flood-color="#f97316" flood-opacity="0.4"/>
+        <feComposite in2="blur" operator="in"/>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glow-red-impact" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="4" result="blur"/>
+        <feFlood flood-color="#ef4444" flood-opacity="0.5"/>
+        <feComposite in2="blur" operator="in"/>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      
+      <pattern id="grid-impact" width="25" height="25" patternUnits="userSpaceOnUse">
+        <path d="M 25 0 L 0 0 0 25" fill="none" stroke="rgba(100,100,140,0.06)" stroke-width="0.5"/>
+      </pattern>
+      
+      <marker id="arrow-right" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#64748b" stroke-width="1.5"/>
+      </marker>
+    </defs>
+    
+    <!-- Background -->
+    <rect width="800" height="400" fill="#0c0c14" rx="8"/>
+    <rect width="800" height="400" fill="url(#grid-impact)" rx="8"/>
+    
+    <!-- Title -->
+    <text x="400" y="35" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="600">Hiérarchie d'Impact IDOR</text>
+    
+    <!-- Bounty scale -->
+    <text x="50" y="375" fill="#475569" font-size="9">$50-200</text>
+    <text x="225" y="375" fill="#475569" font-size="9">$200-500</text>
+    <text x="425" y="375" fill="#475569" font-size="9">$500-2000</text>
+    <text x="625" y="375" fill="#475569" font-size="9">$2000-10000+</text>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- LOW - Information Disclosure               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <g transform="translate(100, 80)">
+      <rect x="-70" y="0" width="140" height="240" rx="6" fill="#0f1520" stroke="#64748b" stroke-width="2" filter="url(#glow-gray)"/>
+      <text x="0" y="25" text-anchor="middle" fill="#64748b" font-size="13" font-weight="700">LOW</text>
+      <line x1="-50" y1="40" x2="50" y2="40" stroke="#334155" stroke-width="1"/>
+      
+      <text x="0" y="65" text-anchor="middle" fill="#94a3b8" font-size="9">Info non-critique</text>
+      <text x="0" y="95" text-anchor="middle" fill="#64748b" font-size="8">• Préférences UI</text>
+      <text x="0" y="115" text-anchor="middle" fill="#64748b" font-size="8">• Timestamps</text>
+      <text x="0" y="135" text-anchor="middle" fill="#64748b" font-size="8">• Métadonnées</text>
+      <text x="0" y="155" text-anchor="middle" fill="#64748b" font-size="8">• Configs publiques</text>
+      
+      <rect x="-55" y="175" width="110" height="45" rx="4" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+      <text x="0" y="195" text-anchor="middle" fill="#cbd5e1" font-size="8">Lecture seule</text>
+      <text x="0" y="210" text-anchor="middle" fill="#64748b" font-size="7">Pas d'impact réel</text>
+    </g>
+    
+    <!-- Arrow L→M -->
+    <line x1="170" y1="200" x2="205" y2="200" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow-right)"/>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- MEDIUM - PII Exposure                      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <g transform="translate(275, 80)">
+      <rect x="-70" y="0" width="140" height="240" rx="6" fill="#0f1520" stroke="#eab308" stroke-width="2" filter="url(#glow-yellow)"/>
+      <text x="0" y="25" text-anchor="middle" fill="#eab308" font-size="13" font-weight="700">MEDIUM</text>
+      <line x1="-50" y1="40" x2="50" y2="40" stroke="#422006" stroke-width="1"/>
+      
+      <text x="0" y="65" text-anchor="middle" fill="#fde047" font-size="9">PII / Données perso</text>
+      <text x="0" y="95" text-anchor="middle" fill="#a3a328" font-size="8">• Emails</text>
+      <text x="0" y="115" text-anchor="middle" fill="#a3a328" font-size="8">• Téléphones</text>
+      <text x="0" y="135" text-anchor="middle" fill="#a3a328" font-size="8">• Adresses</text>
+      <text x="0" y="155" text-anchor="middle" fill="#a3a328" font-size="8">• Historique commandes</text>
+      
+      <rect x="-55" y="175" width="110" height="45" rx="4" fill="#422006" stroke="#ca8a04" stroke-width="1"/>
+      <text x="0" y="195" text-anchor="middle" fill="#fef08a" font-size="8">Lecture PII</text>
+      <text x="0" y="210" text-anchor="middle" fill="#a3a328" font-size="7">Privacy impact</text>
+    </g>
+    
+    <!-- Arrow M→H -->
+    <line x1="345" y1="200" x2="380" y2="200" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow-right)"/>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- HIGH - Write Access                        -->
+    <!-- ═══════════════════════════════════════════ -->
+    <g transform="translate(450, 80)">
+      <rect x="-70" y="0" width="140" height="240" rx="6" fill="#0f1520" stroke="#f97316" stroke-width="2" filter="url(#glow-orange)"/>
+      <text x="0" y="25" text-anchor="middle" fill="#f97316" font-size="13" font-weight="700">HIGH</text>
+      <line x1="-50" y1="40" x2="50" y2="40" stroke="#7c2d12" stroke-width="1"/>
+      
+      <text x="0" y="65" text-anchor="middle" fill="#fdba74" font-size="9">Modification données</text>
+      <text x="0" y="95" text-anchor="middle" fill="#c2410c" font-size="8">• Edit profil autre</text>
+      <text x="0" y="115" text-anchor="middle" fill="#c2410c" font-size="8">• Supprimer ressources</text>
+      <text x="0" y="135" text-anchor="middle" fill="#c2410c" font-size="8">• Upload fichiers</text>
+      <text x="0" y="155" text-anchor="middle" fill="#c2410c" font-size="8">• Modifier commandes</text>
+      
+      <rect x="-55" y="175" width="110" height="45" rx="4" fill="#7c2d12" stroke="#ea580c" stroke-width="1"/>
+      <text x="0" y="195" text-anchor="middle" fill="#fed7aa" font-size="8">Écriture</text>
+      <text x="0" y="210" text-anchor="middle" fill="#c2410c" font-size="7">Intégrité compromise</text>
+    </g>
+    
+    <!-- Arrow H→C -->
+    <line x1="520" y1="200" x2="555" y2="200" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow-right)"/>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- CRITICAL - Account Takeover / Financial    -->
+    <!-- ═══════════════════════════════════════════ -->
+    <g transform="translate(625, 80)">
+      <rect x="-70" y="0" width="140" height="240" rx="6" fill="#0f1520" stroke="#ef4444" stroke-width="2" filter="url(#glow-red-impact)"/>
+      <text x="0" y="25" text-anchor="middle" fill="#ef4444" font-size="13" font-weight="700">CRITICAL</text>
+      <line x1="-50" y1="40" x2="50" y2="40" stroke="#7f1d1d" stroke-width="1"/>
+      
+      <text x="0" y="65" text-anchor="middle" fill="#fca5a5" font-size="9">ATO / Financial</text>
+      <text x="0" y="95" text-anchor="middle" fill="#b91c1c" font-size="8">• Reset password</text>
+      <text x="0" y="115" text-anchor="middle" fill="#b91c1c" font-size="8">• Token/session leak</text>
+      <text x="0" y="135" text-anchor="middle" fill="#b91c1c" font-size="8">• Transactions</text>
+      <text x="0" y="155" text-anchor="middle" fill="#b91c1c" font-size="8">• Admin access</text>
+      
+      <rect x="-55" y="175" width="110" height="45" rx="4" fill="#7f1d1d" stroke="#dc2626" stroke-width="1"/>
+      <text x="0" y="195" text-anchor="middle" fill="#fecaca" font-size="8">Full Compromise</text>
+      <text x="0" y="210" text-anchor="middle" fill="#b91c1c" font-size="7">Business critical</text>
+    </g>
+    
+    <!-- Impact arrow at bottom -->
+    <line x1="60" y1="350" x2="740" y2="350" stroke="#475569" stroke-width="1" stroke-dasharray="4,2"/>
+    <text x="750" y="354" fill="#64748b" font-size="10">Impact →</text>
+  </svg>
+</div>
+
+<style>
+  .diagram-container {
+    margin: 2rem 0;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+  }
+  
+  .impact-diagram {
+    width: 100%;
+    min-width: 600px;
+    max-width: 800px;
+    margin: 0 auto;
+    display: block;
+  }
+</style>
