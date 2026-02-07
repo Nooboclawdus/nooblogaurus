@@ -1,0 +1,168 @@
+---
+// Diagramme: Comment Autorize fonctionne
+// Requête → 3 versions → Comparaison → Verdict
+---
+
+<div class="diagram-container">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" class="autorize-diagram">
+    <defs>
+      <filter id="glow-green-az" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feFlood flood-color="#22c55e" flood-opacity="0.4"/>
+        <feComposite in2="blur" operator="in"/>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glow-red-az" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feFlood flood-color="#ef4444" flood-opacity="0.4"/>
+        <feComposite in2="blur" operator="in"/>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glow-cyan-az" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feFlood flood-color="#06b6d4" flood-opacity="0.4"/>
+        <feComposite in2="blur" operator="in"/>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glow-amber-az" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feFlood flood-color="#f59e0b" flood-opacity="0.4"/>
+        <feComposite in2="blur" operator="in"/>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glow-purple-az" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feFlood flood-color="#a855f7" flood-opacity="0.4"/>
+        <feComposite in2="blur" operator="in"/>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      
+      <pattern id="grid-az" width="25" height="25" patternUnits="userSpaceOnUse">
+        <path d="M 25 0 L 0 0 0 25" fill="none" stroke="rgba(100,100,140,0.06)" stroke-width="0.5"/>
+      </pattern>
+      
+      <marker id="arrow-az" viewBox="0 0 10 10" refX="5" refY="10" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 0 L 5 10 L 10 0" fill="none" stroke="#64748b" stroke-width="1.5"/>
+      </marker>
+    </defs>
+    
+    <!-- Background -->
+    <rect width="800" height="480" fill="#0c0c14" rx="8"/>
+    <rect width="800" height="480" fill="url(#grid-az)" rx="8"/>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- STEP 1: REQUÊTE ORIGINALE                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <g transform="translate(400, 25)">
+      <rect x="-150" y="0" width="300" height="50" rx="6" fill="#0f1520" stroke="#06b6d4" stroke-width="2" filter="url(#glow-cyan-az)"/>
+      <text x="0" y="20" text-anchor="middle" fill="#06b6d4" font-size="12" font-weight="600">REQUÊTE ORIGINALE</text>
+      <text x="0" y="38" text-anchor="middle" fill="#94a3b8" font-size="10">Token high-priv (Compte A)</text>
+    </g>
+    
+    <!-- Arrow to Autorize -->
+    <line x1="400" y1="75" x2="400" y2="100" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow-az)"/>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- AUTORIZE BOX                                -->
+    <!-- ═══════════════════════════════════════════ -->
+    <g transform="translate(400, 110)">
+      <rect x="-180" y="0" width="360" height="45" rx="6" fill="#0f1520" stroke="#a855f7" stroke-width="2" filter="url(#glow-purple-az)"/>
+      <text x="0" y="28" text-anchor="middle" fill="#a855f7" font-size="13" font-weight="700" style="font-family: monospace;">AUTORIZE</text>
+    </g>
+    
+    <!-- Arrows splitting to 3 versions -->
+    <line x1="400" y1="155" x2="400" y2="175" stroke="#64748b" stroke-width="1.5"/>
+    <line x1="400" y1="175" x2="150" y2="200" stroke="#64748b" stroke-width="1.5"/>
+    <line x1="400" y1="175" x2="400" y2="200" stroke="#64748b" stroke-width="1.5"/>
+    <line x1="400" y1="175" x2="650" y2="200" stroke="#64748b" stroke-width="1.5"/>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 3 VERSIONS                                  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- Baseline -->
+    <g transform="translate(150, 210)">
+      <rect x="-90" y="0" width="180" height="65" rx="6" fill="#0f1520" stroke="#06b6d4" stroke-width="1.5"/>
+      <text x="0" y="20" text-anchor="middle" fill="#06b6d4" font-size="11" font-weight="600">BASELINE</text>
+      <text x="0" y="38" text-anchor="middle" fill="#94a3b8" font-size="9">Requête originale</text>
+      <text x="0" y="52" text-anchor="middle" fill="#64748b" font-size="9">(token A)</text>
+    </g>
+    
+    <!-- Mutated -->
+    <g transform="translate(400, 210)">
+      <rect x="-90" y="0" width="180" height="65" rx="6" fill="#0f1520" stroke="#f59e0b" stroke-width="1.5" filter="url(#glow-amber-az)"/>
+      <text x="0" y="20" text-anchor="middle" fill="#f59e0b" font-size="11" font-weight="600">MUTATED</text>
+      <text x="0" y="38" text-anchor="middle" fill="#94a3b8" font-size="9">Token remplacé</text>
+      <text x="0" y="52" text-anchor="middle" fill="#64748b" font-size="9">(token B low-priv)</text>
+    </g>
+    
+    <!-- No-Auth -->
+    <g transform="translate(650, 210)">
+      <rect x="-90" y="0" width="180" height="65" rx="6" fill="#0f1520" stroke="#ef4444" stroke-width="1.5"/>
+      <text x="0" y="20" text-anchor="middle" fill="#ef4444" font-size="11" font-weight="600">NO-AUTH</text>
+      <text x="0" y="38" text-anchor="middle" fill="#94a3b8" font-size="9">Sans authentification</text>
+      <text x="0" y="52" text-anchor="middle" fill="#64748b" font-size="9">(pas de token)</text>
+    </g>
+    
+    <!-- Arrows converging to compare -->
+    <line x1="150" y1="275" x2="150" y2="295" stroke="#64748b" stroke-width="1"/>
+    <line x1="400" y1="275" x2="400" y2="295" stroke="#64748b" stroke-width="1"/>
+    <line x1="650" y1="275" x2="650" y2="295" stroke="#64748b" stroke-width="1"/>
+    <line x1="150" y1="295" x2="400" y2="320" stroke="#64748b" stroke-width="1"/>
+    <line x1="400" y1="295" x2="400" y2="320" stroke="#64748b" stroke-width="1"/>
+    <line x1="650" y1="295" x2="400" y2="320" stroke="#64748b" stroke-width="1"/>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- COMPARE                                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <g transform="translate(400, 325)">
+      <rect x="-100" y="0" width="200" height="40" rx="6" fill="#0f1520" stroke="#64748b" stroke-width="1.5"/>
+      <text x="0" y="25" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600">COMPARE RÉPONSES</text>
+    </g>
+    
+    <!-- Arrows to results -->
+    <line x1="400" y1="365" x2="400" y2="385" stroke="#64748b" stroke-width="1.5"/>
+    <line x1="400" y1="385" x2="150" y2="405" stroke="#64748b" stroke-width="1.5"/>
+    <line x1="400" y1="385" x2="400" y2="405" stroke="#64748b" stroke-width="1.5"/>
+    <line x1="400" y1="385" x2="650" y2="405" stroke="#64748b" stroke-width="1.5"/>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- RESULTS                                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- ALLOW -->
+    <g transform="translate(150, 415)">
+      <rect x="-80" y="0" width="160" height="50" rx="6" fill="#0f1520" stroke="#ef4444" stroke-width="2" filter="url(#glow-red-az)"/>
+      <text x="0" y="22" text-anchor="middle" fill="#ef4444" font-size="12" font-weight="700">ALLOW</text>
+      <text x="0" y="40" text-anchor="middle" fill="#fca5a5" font-size="9">🎯 Potentielle IDOR</text>
+    </g>
+    
+    <!-- DENY -->
+    <g transform="translate(400, 415)">
+      <rect x="-80" y="0" width="160" height="50" rx="6" fill="#0f1520" stroke="#22c55e" stroke-width="2" filter="url(#glow-green-az)"/>
+      <text x="0" y="22" text-anchor="middle" fill="#22c55e" font-size="12" font-weight="700">DENY</text>
+      <text x="0" y="40" text-anchor="middle" fill="#86efac" font-size="9">✓ Accès refusé</text>
+    </g>
+    
+    <!-- UNCERTAIN -->
+    <g transform="translate(650, 415)">
+      <rect x="-80" y="0" width="160" height="50" rx="6" fill="#0f1520" stroke="#f59e0b" stroke-width="2" filter="url(#glow-amber-az)"/>
+      <text x="0" y="22" text-anchor="middle" fill="#f59e0b" font-size="12" font-weight="700">UNCERTAIN</text>
+      <text x="0" y="40" text-anchor="middle" fill="#fcd34d" font-size="9">⚠️ À vérifier</text>
+    </g>
+  </svg>
+</div>
+
+<style>
+  .diagram-container {
+    margin: 2rem 0;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+  }
+  
+  .autorize-diagram {
+    width: 100%;
+    min-width: 600px;
+    max-width: 800px;
+    margin: 0 auto;
+    display: block;
+  }
+</style>

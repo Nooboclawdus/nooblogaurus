@@ -39,6 +39,8 @@ Les résultats en vert marqués DENY indiquent que la requête a été refusée 
 
 Les résultats en jaune marqués UNCERTAIN indiquent que la réponse est différente du baseline mais pas clairement un refus. Peut-être une erreur applicative, une réponse partielle, ou un cas edge. À investiguer manuellement.
 
+<!-- DIAGRAM:autorize -->
+
 ### Les pièges
 
 Si le token de ton compte low-priv expire pendant le scan, toutes les requêtes vont retourner 401 et Autorize va marquer tout comme DENY. Tu vas croire que l'app est sécurisée alors que t'as juste un token expiré. Utilise un token avec une longue durée de vie, ou configure un workflow Caido pour rafraîchir automatiquement le token.
