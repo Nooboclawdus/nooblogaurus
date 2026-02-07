@@ -277,7 +277,7 @@ Si t'as lu jusqu'ici et que t'en veux encore : [PortSwigger Academy](https://por
 
 ## Fin
 
-L'IDOR c'est changer un numéro et voir ce qui se passe. C'est con. C'est efficace. Et c'est toujours là parce que les devs continuent de confondre "connecté" et "autorisé".
+L'IDOR c'est changer un numéro et voir ce qui se passe. C'est efficace. Et c'est toujours là parce que les devs continuent de confondre "connecté" et "autorisé".
 
 Maintenant arrête de lire et va tester des trucs.
 

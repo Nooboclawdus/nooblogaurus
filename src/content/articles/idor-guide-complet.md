@@ -1458,7 +1458,7 @@ Le temps c'est de l'argent. Si t'as passé 4h sans rien trouver sur une app qui 
 
 ## Le mot de la fin
 
-L'IDOR, c'est changer un numéro et voir ce qui se passe. C'est con. C'est efficace. Et c'est toujours là parce que les devs continuent de confondre "connecté" et "autorisé".
+L'IDOR, c'est changer un numéro et voir ce qui se passe. C'est efficace. Et c'est toujours là parce que les devs continuent de confondre "connecté" et "autorisé".
 
 La différence entre le hunter qui trouve et celui qui trouve pas, c'est rarement la technique. C'est la méthode : deux comptes, tous les verbes, vérifier les side-effects, chercher l'escalade. Et surtout, la patience de tester systématiquement au lieu de sauter aux conclusions.
 
