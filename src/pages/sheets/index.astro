@@ -2,35 +2,50 @@
 import Layout from '../../layouts/Layout.astro';
 import SheetCard from '../../components/SheetCard.astro';
 
-// TODO: Import from Cheat-sheets repo
 const sheets = [
-  {
-    title: "XSS Cheat Sheet",
-    description: "Payloads, bypasses et techniques pour Cross-Site Scripting.",
-    slug: "xss",
-    category: "Web"
-  },
-  {
-    title: "SQL Injection",
-    description: "Syntaxes, payloads et techniques d'injection SQL.",
-    slug: "sqli",
-    category: "Web"
-  },
-  {
-    title: "Subdomain Enumeration",
-    description: "Outils et techniques pour l'énumération de sous-domaines.",
-    slug: "subdomain-enum",
-    category: "Recon"
-  },
-  {
-    title: "Linux Privilege Escalation",
-    description: "Checklist et techniques pour l'escalade de privilèges Linux.",
-    slug: "linux-privesc",
-    category: "Privesc"
-  }
+  { title: "Amass", slug: "amass", category: "Recon", description: "Énumération de sous-domaines avec OWASP Amass." },
+  { title: "Arjun", slug: "arjun", category: "Web", description: "Découverte de paramètres HTTP cachés." },
+  { title: "Assetfinder", slug: "assetfinder", category: "Recon", description: "Trouver des domaines et sous-domaines." },
+  { title: "Commix", slug: "commix", category: "Web", description: "Injection de commandes automatisée." },
+  { title: "Dalfox", slug: "dalfox", category: "Web", description: "Scanner XSS rapide et précis." },
+  { title: "Dirsearch", slug: "dirsearch", category: "Web", description: "Bruteforce de répertoires et fichiers." },
+  { title: "DNSrecon", slug: "dnsrecon", category: "Recon", description: "Énumération et audit DNS." },
+  { title: "DNSX", slug: "dnsx", category: "Recon", description: "Toolkit DNS multi-purpose de ProjectDiscovery." },
+  { title: "Docker", slug: "docker", category: "Ops", description: "Commandes Docker essentielles." },
+  { title: "Feroxbuster", slug: "feroxbuster", category: "Web", description: "Bruteforce de contenu récursif ultra-rapide." },
+  { title: "ffuf", slug: "ffuf", category: "Web", description: "Fuzzer web rapide écrit en Go." },
+  { title: "Gobuster", slug: "gobuster", category: "Web", description: "Bruteforce de répertoires, DNS, vhosts." },
+  { title: "Google Dorks", slug: "google-dorks", category: "OSINT", description: "Recherches Google avancées pour le recon." },
+  { title: "Hashcat", slug: "hashcat", category: "Crack", description: "Cracking de mots de passe GPU." },
+  { title: "httpx", slug: "httpx", category: "Recon", description: "Probing HTTP rapide et flexible." },
+  { title: "Hydra", slug: "hydra", category: "Crack", description: "Bruteforce de services réseau." },
+  { title: "Interactsh", slug: "interactsh", category: "Web", description: "Serveur OOB pour SSRF, XXE, etc." },
+  { title: "JWT Tool", slug: "jwt_tool", category: "Web", description: "Test et manipulation de JSON Web Tokens." },
+  { title: "Katana", slug: "katana", category: "Recon", description: "Crawler web next-gen de ProjectDiscovery." },
+  { title: "LinkFinder", slug: "linkfinder", category: "Web", description: "Extraction d'endpoints dans le JS." },
+  { title: "Masscan", slug: "masscan", category: "Network", description: "Scanner de ports ultra-rapide." },
+  { title: "MassDNS", slug: "massdns", category: "Recon", description: "Résolution DNS à haute performance." },
+  { title: "Meterpreter", slug: "meterpreter", category: "Post-Exploit", description: "Payload Metasploit pour le post-exploitation." },
+  { title: "Naabu", slug: "naabu", category: "Network", description: "Scanner de ports rapide de ProjectDiscovery." },
+  { title: "NetExec", slug: "netexec", category: "Network", description: "Swiss army knife pour le pentest Windows/AD." },
+  { title: "Nmap", slug: "nmap", category: "Network", description: "Le scanner réseau de référence." },
+  { title: "Nuclei", slug: "nuclei", category: "Web", description: "Scanner de vulnérabilités basé sur des templates." },
+  { title: "Responder", slug: "responder", category: "Network", description: "Poisoning LLMNR/NBT-NS/mDNS." },
+  { title: "RustScan", slug: "rustscan", category: "Network", description: "Scanner de ports moderne en Rust." },
+  { title: "SecretFinder", slug: "secretfinder", category: "Web", description: "Extraction de secrets dans le JS." },
+  { title: "smbclient", slug: "smbclient", category: "Network", description: "Client SMB en ligne de commande." },
+  { title: "smbmap", slug: "smbmap", category: "Network", description: "Énumération de partages SMB." },
+  { title: "SQLmap", slug: "sqlmap", category: "Web", description: "Exploitation automatisée d'injections SQL." },
+  { title: "SSRFmap", slug: "ssrfmap", category: "Web", description: "Exploitation automatisée de SSRF." },
+  { title: "Subfinder", slug: "subfinder", category: "Recon", description: "Découverte passive de sous-domaines." },
+  { title: "tshark", slug: "tshark", category: "Network", description: "Wireshark en ligne de commande." },
+  { title: "Uncover", slug: "uncover", category: "OSINT", description: "Recherche Shodan/Censys/etc depuis le terminal." },
+  { title: "Wafw00f", slug: "wafw00f", category: "Recon", description: "Détection de WAF." },
+  { title: "WhatWeb", slug: "whatweb", category: "Recon", description: "Fingerprinting de technologies web." },
+  { title: "XSStrike", slug: "xsstrike", category: "Web", description: "Scanner XSS avancé." }
 ];
 
-const categories = [...new Set(sheets.map(s => s.category).filter(Boolean))];
+const categories = [...new Set(sheets.map(s => s.category).filter(Boolean))].sort();
 ---
 
 <Layout title="Cheat Sheets" description="Références rapides pour le pentesting et le bug bounty.">
@@ -39,16 +54,16 @@ const categories = [...new Set(sheets.map(s => s.category).filter(Boolean))];
       <span class="text-[var(--color-text-muted)] font-mono">&gt;</span> Cheat Sheets
     </h1>
     <p class="text-[var(--color-text-muted)] mb-8">
-      Références rapides pour le pentesting et le bug bounty. Quick and dirty.
+      {sheets.length} références rapides pour le pentesting et le bug bounty. Quick and dirty.
     </p>
     
     <!-- Categories filter -->
     <div class="flex items-center gap-2 flex-wrap mb-8">
       <span class="text-sm text-[var(--color-text-muted)] font-mono">Catégories:</span>
       {categories.map(cat => (
-        <button class="text-xs font-mono px-3 py-1 rounded-full border border-[var(--color-border)] text-[var(--color-text-muted)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors">
+        <span class="text-xs font-mono px-3 py-1 rounded-full border border-[var(--color-border)] text-[var(--color-text-muted)]">
           {cat}
-        </button>
+        </span>
       ))}
     </div>
     

@@ -1,0 +1,253 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { marked } from 'marked';
+import fs from 'fs';
+import path from 'path';
+
+const sheets = [
+  { title: "Amass", slug: "amass", category: "Recon", description: "Énumération de sous-domaines avec OWASP Amass." },
+  { title: "Arjun", slug: "arjun", category: "Web", description: "Découverte de paramètres HTTP cachés." },
+  { title: "Assetfinder", slug: "assetfinder", category: "Recon", description: "Trouver des domaines et sous-domaines." },
+  { title: "Commix", slug: "commix", category: "Web", description: "Injection de commandes automatisée." },
+  { title: "Dalfox", slug: "dalfox", category: "Web", description: "Scanner XSS rapide et précis." },
+  { title: "Dirsearch", slug: "dirsearch", category: "Web", description: "Bruteforce de répertoires et fichiers." },
+  { title: "DNSrecon", slug: "dnsrecon", category: "Recon", description: "Énumération et audit DNS." },
+  { title: "DNSX", slug: "dnsx", category: "Recon", description: "Toolkit DNS multi-purpose de ProjectDiscovery." },
+  { title: "Docker", slug: "docker", category: "Ops", description: "Commandes Docker essentielles." },
+  { title: "Feroxbuster", slug: "feroxbuster", category: "Web", description: "Bruteforce de contenu récursif ultra-rapide." },
+  { title: "ffuf", slug: "ffuf", category: "Web", description: "Fuzzer web rapide écrit en Go." },
+  { title: "Gobuster", slug: "gobuster", category: "Web", description: "Bruteforce de répertoires, DNS, vhosts." },
+  { title: "Google Dorks", slug: "google-dorks", category: "OSINT", description: "Recherches Google avancées pour le recon." },
+  { title: "Hashcat", slug: "hashcat", category: "Crack", description: "Cracking de mots de passe GPU." },
+  { title: "httpx", slug: "httpx", category: "Recon", description: "Probing HTTP rapide et flexible." },
+  { title: "Hydra", slug: "hydra", category: "Crack", description: "Bruteforce de services réseau." },
+  { title: "Interactsh", slug: "interactsh", category: "Web", description: "Serveur OOB pour SSRF, XXE, etc." },
+  { title: "JWT Tool", slug: "jwt_tool", category: "Web", description: "Test et manipulation de JSON Web Tokens." },
+  { title: "Katana", slug: "katana", category: "Recon", description: "Crawler web next-gen de ProjectDiscovery." },
+  { title: "LinkFinder", slug: "linkfinder", category: "Web", description: "Extraction d'endpoints dans le JS." },
+  { title: "Masscan", slug: "masscan", category: "Network", description: "Scanner de ports ultra-rapide." },
+  { title: "MassDNS", slug: "massdns", category: "Recon", description: "Résolution DNS à haute performance." },
+  { title: "Meterpreter", slug: "meterpreter", category: "Post-Exploit", description: "Payload Metasploit pour le post-exploitation." },
+  { title: "Naabu", slug: "naabu", category: "Network", description: "Scanner de ports rapide de ProjectDiscovery." },
+  { title: "NetExec", slug: "netexec", category: "Network", description: "Swiss army knife pour le pentest Windows/AD." },
+  { title: "Nmap", slug: "nmap", category: "Network", description: "Le scanner réseau de référence." },
+  { title: "Nuclei", slug: "nuclei", category: "Web", description: "Scanner de vulnérabilités basé sur des templates." },
+  { title: "Responder", slug: "responder", category: "Network", description: "Poisoning LLMNR/NBT-NS/mDNS." },
+  { title: "RustScan", slug: "rustscan", category: "Network", description: "Scanner de ports moderne en Rust." },
+  { title: "SecretFinder", slug: "secretfinder", category: "Web", description: "Extraction de secrets dans le JS." },
+  { title: "smbclient", slug: "smbclient", category: "Network", description: "Client SMB en ligne de commande." },
+  { title: "smbmap", slug: "smbmap", category: "Network", description: "Énumération de partages SMB." },
+  { title: "SQLmap", slug: "sqlmap", category: "Web", description: "Exploitation automatisée d'injections SQL." },
+  { title: "SSRFmap", slug: "ssrfmap", category: "Web", description: "Exploitation automatisée de SSRF." },
+  { title: "Subfinder", slug: "subfinder", category: "Recon", description: "Découverte passive de sous-domaines." },
+  { title: "tshark", slug: "tshark", category: "Network", description: "Wireshark en ligne de commande." },
+  { title: "Uncover", slug: "uncover", category: "OSINT", description: "Recherche Shodan/Censys/etc depuis le terminal." },
+  { title: "Wafw00f", slug: "wafw00f", category: "Recon", description: "Détection de WAF." },
+  { title: "WhatWeb", slug: "whatweb", category: "Recon", description: "Fingerprinting de technologies web." },
+  { title: "XSStrike", slug: "xsstrike", category: "Web", description: "Scanner XSS avancé." }
+];
+
+export function getStaticPaths() {
+  const sheetsData = [
+    { title: "Amass", slug: "amass", category: "Recon", description: "Énumération de sous-domaines avec OWASP Amass." },
+    { title: "Arjun", slug: "arjun", category: "Web", description: "Découverte de paramètres HTTP cachés." },
+    { title: "Assetfinder", slug: "assetfinder", category: "Recon", description: "Trouver des domaines et sous-domaines." },
+    { title: "Commix", slug: "commix", category: "Web", description: "Injection de commandes automatisée." },
+    { title: "Dalfox", slug: "dalfox", category: "Web", description: "Scanner XSS rapide et précis." },
+    { title: "Dirsearch", slug: "dirsearch", category: "Web", description: "Bruteforce de répertoires et fichiers." },
+    { title: "DNSrecon", slug: "dnsrecon", category: "Recon", description: "Énumération et audit DNS." },
+    { title: "DNSX", slug: "dnsx", category: "Recon", description: "Toolkit DNS multi-purpose de ProjectDiscovery." },
+    { title: "Docker", slug: "docker", category: "Ops", description: "Commandes Docker essentielles." },
+    { title: "Feroxbuster", slug: "feroxbuster", category: "Web", description: "Bruteforce de contenu récursif ultra-rapide." },
+    { title: "ffuf", slug: "ffuf", category: "Web", description: "Fuzzer web rapide écrit en Go." },
+    { title: "Gobuster", slug: "gobuster", category: "Web", description: "Bruteforce de répertoires, DNS, vhosts." },
+    { title: "Google Dorks", slug: "google-dorks", category: "OSINT", description: "Recherches Google avancées pour le recon." },
+    { title: "Hashcat", slug: "hashcat", category: "Crack", description: "Cracking de mots de passe GPU." },
+    { title: "httpx", slug: "httpx", category: "Recon", description: "Probing HTTP rapide et flexible." },
+    { title: "Hydra", slug: "hydra", category: "Crack", description: "Bruteforce de services réseau." },
+    { title: "Interactsh", slug: "interactsh", category: "Web", description: "Serveur OOB pour SSRF, XXE, etc." },
+    { title: "JWT Tool", slug: "jwt_tool", category: "Web", description: "Test et manipulation de JSON Web Tokens." },
+    { title: "Katana", slug: "katana", category: "Recon", description: "Crawler web next-gen de ProjectDiscovery." },
+    { title: "LinkFinder", slug: "linkfinder", category: "Web", description: "Extraction d'endpoints dans le JS." },
+    { title: "Masscan", slug: "masscan", category: "Network", description: "Scanner de ports ultra-rapide." },
+    { title: "MassDNS", slug: "massdns", category: "Recon", description: "Résolution DNS à haute performance." },
+    { title: "Meterpreter", slug: "meterpreter", category: "Post-Exploit", description: "Payload Metasploit pour le post-exploitation." },
+    { title: "Naabu", slug: "naabu", category: "Network", description: "Scanner de ports rapide de ProjectDiscovery." },
+    { title: "NetExec", slug: "netexec", category: "Network", description: "Swiss army knife pour le pentest Windows/AD." },
+    { title: "Nmap", slug: "nmap", category: "Network", description: "Le scanner réseau de référence." },
+    { title: "Nuclei", slug: "nuclei", category: "Web", description: "Scanner de vulnérabilités basé sur des templates." },
+    { title: "Responder", slug: "responder", category: "Network", description: "Poisoning LLMNR/NBT-NS/mDNS." },
+    { title: "RustScan", slug: "rustscan", category: "Network", description: "Scanner de ports moderne en Rust." },
+    { title: "SecretFinder", slug: "secretfinder", category: "Web", description: "Extraction de secrets dans le JS." },
+    { title: "smbclient", slug: "smbclient", category: "Network", description: "Client SMB en ligne de commande." },
+    { title: "smbmap", slug: "smbmap", category: "Network", description: "Énumération de partages SMB." },
+    { title: "SQLmap", slug: "sqlmap", category: "Web", description: "Exploitation automatisée d'injections SQL." },
+    { title: "SSRFmap", slug: "ssrfmap", category: "Web", description: "Exploitation automatisée de SSRF." },
+    { title: "Subfinder", slug: "subfinder", category: "Recon", description: "Découverte passive de sous-domaines." },
+    { title: "tshark", slug: "tshark", category: "Network", description: "Wireshark en ligne de commande." },
+    { title: "Uncover", slug: "uncover", category: "OSINT", description: "Recherche Shodan/Censys/etc depuis le terminal." },
+    { title: "Wafw00f", slug: "wafw00f", category: "Recon", description: "Détection de WAF." },
+    { title: "WhatWeb", slug: "whatweb", category: "Recon", description: "Fingerprinting de technologies web." },
+    { title: "XSStrike", slug: "xsstrike", category: "Web", description: "Scanner XSS avancé." }
+  ];
+  
+  return sheetsData.map(sheet => ({
+    params: { slug: sheet.slug },
+    props: sheet
+  }));
+}
+
+const { slug } = Astro.params;
+const { title, category, description } = Astro.props;
+
+// Read the markdown file
+const contentDir = path.join(process.cwd(), 'src', 'content', 'sheets');
+let mdContent = '';
+try {
+  mdContent = fs.readFileSync(path.join(contentDir, `${slug}.md`), 'utf-8');
+} catch {
+  try {
+    mdContent = fs.readFileSync(path.join(contentDir, `${slug.replace('-', '_')}.md`), 'utf-8');
+  } catch {
+    mdContent = `# ${title}\n\nContenu à venir...`;
+  }
+}
+
+const htmlContent = marked.parse(mdContent);
+---
+
+<Layout title={`${title} - Cheat Sheet`} description={description}>
+  <article class="py-8">
+    <header class="mb-8">
+      <div class="flex items-center gap-2 mb-4">
+        <a href="/sheets" class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)] font-mono text-sm">
+          ← Cheat Sheets
+        </a>
+        <span class="text-[var(--color-text-muted)]">/</span>
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)] text-[var(--color-accent)]">
+          {category}
+        </span>
+      </div>
+    </header>
+    
+    <div class="prose-sheet" set:html={htmlContent} />
+    
+    <div class="mt-12 pt-8 border-t border-[var(--color-border)]">
+      <a href="/sheets" class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)] font-mono text-sm">
+        ← Retour aux cheat sheets
+      </a>
+    </div>
+  </article>
+</Layout>
+
+<style is:global>
+  .prose-sheet {
+    color: var(--color-text);
+  }
+  
+  .prose-sheet h1 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--color-text);
+  }
+  
+  .prose-sheet h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 0.5rem;
+  }
+  
+  .prose-sheet h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--color-text);
+  }
+  
+  .prose-sheet p {
+    margin-bottom: 1rem;
+    color: var(--color-text-muted);
+  }
+  
+  .prose-sheet blockquote {
+    border-left: 4px solid var(--color-accent);
+    padding-left: 1rem;
+    font-style: italic;
+    color: var(--color-text-muted);
+    margin: 1rem 0;
+  }
+  
+  .prose-sheet ul, .prose-sheet ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }
+  
+  .prose-sheet li {
+    margin-bottom: 0.5rem;
+    color: var(--color-text-muted);
+  }
+  
+  .prose-sheet code {
+    background: var(--color-bg-alt);
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    color: var(--color-accent);
+    font-family: monospace;
+    font-size: 0.875rem;
+  }
+  
+  .prose-sheet pre {
+    background: var(--color-bg-alt);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin-bottom: 1rem;
+    border: 1px solid var(--color-border);
+  }
+  
+  .prose-sheet pre code {
+    background: transparent;
+    padding: 0;
+    color: var(--color-text);
+  }
+  
+  .prose-sheet table {
+    width: 100%;
+    margin-bottom: 1rem;
+    border-collapse: collapse;
+  }
+  
+  .prose-sheet th {
+    text-align: left;
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-weight: 600;
+    background: var(--color-bg-alt);
+  }
+  
+  .prose-sheet td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+  }
+  
+  .prose-sheet a {
+    color: var(--color-accent);
+  }
+  
+  .prose-sheet a:hover {
+    text-decoration: underline;
+  }
+  
+  .prose-sheet hr {
+    margin: 2rem 0;
+    border-color: var(--color-border);
+  }
+</style>

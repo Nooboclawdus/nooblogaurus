@@ -1,5 +1,8 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { marked } from 'marked';
+import fs from 'fs';
+import path from 'path';
 
 const article = {
   title: "IDOR : Le guide pour ceux qui en ont marre des guides IDOR",
@@ -14,6 +17,17 @@ const formattedDate = new Date(article.date).toLocaleDateString('fr-FR', {
   month: 'long',
   day: 'numeric'
 });
+
+// Read the markdown file
+const contentPath = path.join(process.cwd(), 'src', 'content', 'articles', 'idor-guide-complet.md');
+let mdContent = '';
+try {
+  mdContent = fs.readFileSync(contentPath, 'utf-8');
+} catch {
+  mdContent = `# ${article.title}\n\nContenu à venir...`;
+}
+
+const htmlContent = marked.parse(mdContent);
 ---
 
 <Layout title={article.title} description={article.description}>
@@ -28,12 +42,6 @@ const formattedDate = new Date(article.date).toLocaleDateString('fr-FR', {
         ))}
       </div>
       
-      <h1 class="text-3xl md:text-4xl font-bold mb-4">{article.title}</h1>
-      
-      <p class="text-lg text-[var(--color-text-muted)] mb-6 italic">
-        Ou comment j'ai arrêté de lire "changez le 1 en 2" et commencé à trouver des trucs.
-      </p>
-      
       <div class="flex items-center gap-4 text-sm text-[var(--color-text-muted)] font-mono">
         <span>{formattedDate}</span>
         <span>•</span>
@@ -42,157 +50,7 @@ const formattedDate = new Date(article.date).toLocaleDateString('fr-FR', {
     </header>
     
     <!-- Content -->
-    <div class="prose">
-      <p>
-        Si t'es là, c'est que t'as probablement déjà lu 47 articles qui t'expliquent qu'une IDOR c'est quand tu changes <code>id=1</code> en <code>id=2</code>. Bravo, tu sais lire une URL. Maintenant on va parler des trucs que personne t'explique : pourquoi tu rates des IDOR, comment automatiser sans te faire ban, et ce que les devs font de travers pour que ça existe encore en 2026.
-      </p>
-      
-      <p><strong>Spoiler</strong> : c'est pas compliqué. C'est juste que tout le monde fait les mêmes erreurs.</p>
-      
-      <hr />
-      
-      <h2>Ce que cet article n'est pas</h2>
-      
-      <ul>
-        <li>Un cours sur ce qu'est une IDOR (va sur <a href="https://portswigger.net/web-security/access-control/idor" target="_blank" rel="noopener">PortSwigger</a> si t'as besoin)</li>
-        <li>Une liste de bounties pour te faire rêver (ça varie trop selon les programmes)</li>
-        <li>Un énième guide théorique sans rien de concret</li>
-      </ul>
-      
-      <p>Ce qu'on va couvrir : la méthode qui marche, les erreurs qui te font perdre du temps, et du code réel pour comprendre pourquoi les devs se plantent.</p>
-      
-      <hr />
-      
-      <h2>Les règles du jeu (à lire avant tout)</h2>
-      
-      <p>Avant d'aller plus loin, une mise au point importante. En bug bounty, tu testes des applications en production avec de vraies données utilisateurs. Y'a des limites à ne pas franchir.</p>
-      
-      <p><strong>Ce qu'on fait :</strong></p>
-      <ul>
-        <li>Lire des données qui ne nous appartiennent pas (avec parcimonie, juste pour prouver la vuln)</li>
-        <li>Modifier ses propres ressources pour comprendre les endpoints</li>
-        <li>Vérifier qu'un endpoint destructif est <em>atteignable</em> sans faire de dégâts</li>
-      </ul>
-      
-      <p><strong>Ce qu'on ne fait PAS :</strong></p>
-      <ul>
-        <li>Supprimer les ressources d'autres utilisateurs</li>
-        <li>Modifier les données d'autres utilisateurs (sauf cas très spécifiques et réversibles)</li>
-        <li>Énumérer massivement des données sensibles</li>
-        <li>Exfiltrer des données au-delà de ce qui est nécessaire pour la preuve</li>
-      </ul>
-      
-      <p><strong>Pour les actions destructives (DELETE, certains PUT) :</strong></p>
-      
-      <p>La méthode safe : tu testes d'abord sur TES PROPRES ressources pour identifier l'endpoint et son comportement. Ensuite, tu vérifies que le contrôle d'accès ne bloque pas quand tu cibles une ressource d'un autre user, mais tu évites l'effet destructif.</p>
-      
-      <p>Important : <strong>un <code>200 OK</code> sur un DELETE n'est pas automatiquement une preuve "safe"</strong>, parce qu'un <code>200</code> peut déjà vouloir dire "c'est supprimé". Ce que tu veux prouver, c'est surtout : <em>la requête a passé l'autorisation (authz) et a atteint la logique métier</em>, sans avoir besoin de casser les données.</p>
-      
-      <hr />
-      
-      <h2>La méthode 2-comptes en profondeur</h2>
-      
-      <p>Tout le monde dit "crée deux comptes". Personne t'explique comment t'organiser pour pas devenir fou. Alors on va le faire.</p>
-      
-      <h3>Pourquoi deux comptes ?</h3>
-      
-      <p>La question paraît bête, mais elle mérite qu'on s'y arrête. Une IDOR, c'est accéder à une ressource qui ne t'appartient pas. Pour prouver que t'accèdes à quelque chose qui n'est pas à toi, tu dois d'abord savoir ce qui EST à toi.</p>
-      
-      <p>Avec un seul compte, tu testes à l'aveugle. Tu changes un ID et tu vois une réponse. Mais est-ce que cette réponse contient des données d'un autre user ? Ou c'est juste des données publiques ? Ou c'est ton propre compte avec un ID différent ? Tu sais pas.</p>
-      
-      <p>Avec deux comptes, tu sais exactement :</p>
-      <ul>
-        <li>Ce que le compte A possède (ses IDs, ses ressources)</li>
-        <li>Ce que le compte B est censé voir (uniquement ses propres ressources)</li>
-        <li>Si B accède aux ressources de A, c'est une IDOR. Point.</li>
-      </ul>
-      
-      <h3>Le setup qui évite les prises de tête</h3>
-      
-      <p><strong>Compte A — La victime</strong></p>
-      
-      <p>C'est le compte dont tu vas essayer d'accéder aux ressources depuis l'autre compte. Crée-le en premier et remplis-le : un profil complet, des ressources variées, des actions dans l'historique.</p>
-      
-      <p>Pendant que tu fais ça, <strong>note méticuleusement tous les IDs que tu croises</strong>. Pas juste dans l'URL — partout.</p>
-      
-      <p><strong>Compte B — L'attaquant</strong></p>
-      
-      <p>Deuxième compte, créé avec un email différent. Ce compte reste relativement vide — son seul but est de tenter d'accéder aux ressources du compte A.</p>
-      
-      <p><strong>L'organisation physique</strong></p>
-      
-      <p>La solution qui marche :</p>
-      <ol>
-        <li><strong>Deux navigateurs différents</strong> (pas juste deux fenêtres) — Firefox pour A, Chrome pour B</li>
-        <li><strong>Ou deux profils de navigateur</strong> — Chrome a une gestion de profils native</li>
-        <li><strong>Ou un navigateur + navigation privée</strong> — mais attention aux partages de session</li>
-      </ol>
-      
-      <hr />
-      
-      <h2>Automatiser avec Autorize (Caido)</h2>
-      
-      <p>Faire le test 2-comptes manuellement, ça marche. Mais c'est lent. Sur une application avec 200 endpoints, tu vas y passer la journée. C'est là qu'<a href="https://github.com/caido-community/autorize" target="_blank" rel="noopener">Autorize</a> entre en jeu.</p>
-      
-      <p>Autorize est le plugin officiel de Caido pour automatiser les tests d'autorisation. Pour chaque requête qui passe par ton proxy, il la rejoue automatiquement avec différents niveaux de privilèges et compare les réponses.</p>
-      
-      <hr />
-      
-      <h2>Les 6 erreurs qui te font perdre du temps</h2>
-      
-      <h3>Erreur 1 : Tester que les IDs évidents</h3>
-      <p>Les IDs ne sont pas que dans les URLs. Cherche dans le body, les headers, les cookies, les tokens base64...</p>
-      
-      <h3>Erreur 2 : S'arrêter au premier 403</h3>
-      <p>GET retourne 403 ? Teste les autres verbes. Les devs protègent souvent GET mais oublient PUT/DELETE/PATCH.</p>
-      
-      <h3>Erreur 3 : Ignorer les réponses "identiques"</h3>
-      <p>IDOR blind : l'action s'exécute côté serveur même si la réponse ne change pas. Vérifie les side-effects.</p>
-      
-      <h3>Erreur 4 : Reporter trop vite</h3>
-      <p>Cherche l'escalade : Read → Write, User → Admin, Single → Mass.</p>
-      
-      <h3>Erreur 5 : Oublier le multi-tenant</h3>
-      <p>Les apps SaaS ont des org_id. Teste l'isolation entre organisations, pas juste entre users.</p>
-      
-      <h3>Erreur 6 : Bruteforcer comme un bourrin</h3>
-      <p>3-5 IDs suffisent pour prouver le pattern. Pas besoin d'en énumérer 10 000.</p>
-      
-      <hr />
-      
-      <h2>Les contextes modernes</h2>
-      
-      <ul>
-        <li><strong>GraphQL</strong> : introspection, batching, nested queries</li>
-        <li><strong>WebSockets</strong> : auth au handshake seulement, pas sur chaque message</li>
-        <li><strong>Server Actions</strong> : Next.js/Remix exposent des fonctions comme des endpoints HTTP</li>
-        <li><strong>gRPC</strong> : mêmes problèmes que REST, protocole différent</li>
-      </ul>
-      
-      <hr />
-      
-      <h2>L'attaque sandwich sur les UUIDs</h2>
-      
-      <p>"On utilise des UUIDs, c'est impossible à deviner." — C'est vrai pour les UUID v4 (aléatoires). C'est faux pour les UUID v1 (basés sur le temps).</p>
-      
-      <p>Si tu connais deux UUIDs générés "autour" d'un troisième, tu peux calculer l'intervalle et réduire l'espace de recherche. Voir l'outil <a href="https://github.com/Lupin-Holmes/sandwich" target="_blank" rel="noopener">sandwich</a> de L&H Security.</p>
-      
-      <hr />
-      
-      <h2>Le mot de la fin</h2>
-      
-      <p>L'IDOR, c'est changer un numéro et voir ce qui se passe. C'est con. C'est efficace. Et c'est toujours là parce que les devs continuent de confondre "connecté" et "autorisé".</p>
-      
-      <p>La différence entre le hunter qui trouve et celui qui trouve pas, c'est rarement la technique. C'est la méthode : deux comptes, tous les verbes, vérifier les side-effects, chercher l'escalade.</p>
-      
-      <p><strong>Maintenant arrête de lire des articles et va tester des trucs.</strong></p>
-      
-      <hr />
-      
-      <p class="text-sm text-[var(--color-text-muted)]">
-        <em>Disclaimer : teste uniquement sur des programmes autorisés où tu as une permission explicite. Respecte les règles de chaque programme. Le bug bounty c'est légal quand tu restes dans le cadre.</em>
-      </p>
-    </div>
+    <div class="prose-article" set:html={htmlContent} />
     
     <!-- Back link -->
     <div class="mt-12 pt-8 border-t border-[var(--color-border)]">
@@ -202,3 +60,137 @@ const formattedDate = new Date(article.date).toLocaleDateString('fr-FR', {
     </div>
   </article>
 </Layout>
+
+<style is:global>
+  .prose-article {
+    color: var(--color-text);
+    max-width: 65ch;
+  }
+  
+  .prose-article h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--color-text);
+  }
+  
+  .prose-article h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 0.5rem;
+  }
+  
+  .prose-article h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    color: var(--color-text);
+  }
+  
+  .prose-article h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-text);
+  }
+  
+  .prose-article p {
+    margin-bottom: 1rem;
+    color: var(--color-text-muted);
+    line-height: 1.75;
+  }
+  
+  .prose-article blockquote {
+    border-left: 4px solid var(--color-accent);
+    padding-left: 1rem;
+    font-style: italic;
+    color: var(--color-text-muted);
+    margin: 1.5rem 0;
+  }
+  
+  .prose-article ul, .prose-article ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }
+  
+  .prose-article li {
+    margin-bottom: 0.5rem;
+    color: var(--color-text-muted);
+    line-height: 1.75;
+  }
+  
+  .prose-article code {
+    background: var(--color-bg-alt);
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    color: var(--color-accent);
+    font-family: monospace;
+    font-size: 0.875rem;
+  }
+  
+  .prose-article pre {
+    background: var(--color-bg-alt);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    border: 1px solid var(--color-border);
+  }
+  
+  .prose-article pre code {
+    background: transparent;
+    padding: 0;
+    color: var(--color-text);
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  
+  .prose-article table {
+    width: 100%;
+    margin: 1.5rem 0;
+    border-collapse: collapse;
+  }
+  
+  .prose-article th {
+    text-align: left;
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-weight: 600;
+    background: var(--color-bg-alt);
+  }
+  
+  .prose-article td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+  }
+  
+  .prose-article a {
+    color: var(--color-accent);
+  }
+  
+  .prose-article a:hover {
+    text-decoration: underline;
+  }
+  
+  .prose-article hr {
+    margin: 2.5rem 0;
+    border-color: var(--color-border);
+  }
+  
+  .prose-article strong {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+  
+  .prose-article em {
+    font-style: italic;
+  }
+</style>
