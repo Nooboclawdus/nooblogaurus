@@ -1,12 +1,12 @@
-# IDOR : Le guide complet — Partie 3 : Techniques avancées
+# IDOR : Les trucs que presque personne explique
 
-*GraphQL, WebSockets, UUIDs, multi-tenant — les cas que personne explique.*
+*GraphQL, WebSockets, UUIDs, multi-tenant — les cas que presque personne explique.*
 
 > [!TIP]
-> **Ce guide est en 3 parties :**
-> - [Partie 1](/articles/idor-partie-1) — Les fondamentaux : méthode 2-comptes, setup, règles du jeu
-> - [Partie 2](/articles/idor-partie-2) — Automatisation avec Autorize + les 6 erreurs classiques
-> - **Partie 3** (tu es ici) — Techniques avancées : GraphQL, UUIDs, multi-tenant
+> **Cet article est en 3 parties :**
+> - [Partie 1](/articles/idor-partie-1) — La méthode qui marche
+> - [Partie 2](/articles/idor-partie-2) — Les conneries à éviter
+> - **Partie 3** (tu es ici) — Les trucs que presque personne explique
 
 ---
 

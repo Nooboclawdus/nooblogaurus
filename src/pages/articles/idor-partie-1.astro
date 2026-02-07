@@ -1,14 +1,15 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { marked } from 'marked';
+import hljs from 'highlight.js';
 import fs from 'fs';
 import path from 'path';
 
 const article = {
-  title: "IDOR : Partie 1 — Les fondamentaux",
+  title: "IDOR : La méthode qui marche",
   description: "La méthode 2-comptes, le setup qui marche, et les règles du jeu pour tester les IDOR proprement.",
   date: "2026-02-07",
-  tags: ["IDOR", "Bug Bounty", "Guide", "Partie 1"],
+  tags: ["IDOR", "Bug Bounty", "1/3"],
   readingTime: "10 min"
 };
 
@@ -56,8 +57,15 @@ while ((match = headingRegex.exec(mdContent)) !== null) {
   });
 }
 
-// Custom renderer to add IDs to headings and style callouts
+// Custom renderer to add IDs to headings, syntax highlighting, and style callouts
 const renderer = new marked.Renderer();
+
+renderer.code = function({ text, lang }) {
+  const language = lang && hljs.getLanguage(lang) ? lang : 'plaintext';
+  const highlighted = hljs.highlight(text, { language }).value;
+  return `<pre><code class="hljs language-${language}">${highlighted}</code></pre>`;
+};
+
 renderer.heading = function({ tokens, depth }) {
   const text = tokens.map(t => t.raw).join('');
   const slug = slugify(text);

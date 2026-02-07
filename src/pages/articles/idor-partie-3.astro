@@ -1,14 +1,15 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { marked } from 'marked';
+import hljs from 'highlight.js';
 import fs from 'fs';
 import path from 'path';
 
 const article = {
-  title: "IDOR : Partie 3 — Techniques avancées",
+  title: "IDOR : Les trucs que presque personne explique",
   description: "GraphQL, WebSockets, UUIDs, multi-tenant — les contextes modernes et techniques avancées.",
   date: "2026-02-07",
-  tags: ["IDOR", "Bug Bounty", "Guide", "Partie 3"],
+  tags: ["IDOR", "Bug Bounty", "3/3"],
   readingTime: "15 min"
 };
 
@@ -56,8 +57,15 @@ while ((match = headingRegex.exec(mdContent)) !== null) {
   });
 }
 
-// Custom renderer to add IDs to headings and style callouts
+// Custom renderer to add IDs to headings, syntax highlighting, and style callouts
 const renderer = new marked.Renderer();
+
+renderer.code = function({ text, lang }) {
+  const language = lang && hljs.getLanguage(lang) ? lang : 'plaintext';
+  const highlighted = hljs.highlight(text, { language }).value;
+  return `<pre><code class="hljs language-${language}">${highlighted}</code></pre>`;
+};
+
 renderer.heading = function({ tokens, depth }) {
   const text = tokens.map(t => t.raw).join('');
   const slug = slugify(text);

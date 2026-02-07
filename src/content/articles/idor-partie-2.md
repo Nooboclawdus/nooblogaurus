@@ -1,12 +1,12 @@
-# IDOR : Le guide complet — Partie 2 : Automatisation & Erreurs
+# IDOR : Les conneries à éviter
 
 *Autorize pour aller vite, et les 6 erreurs qui te font perdre du temps.*
 
 > [!TIP]
-> **Ce guide est en 3 parties :**
-> - [Partie 1](/articles/idor-partie-1) — Les fondamentaux : méthode 2-comptes, setup, règles du jeu
-> - **Partie 2** (tu es ici) — Automatisation avec Autorize + les 6 erreurs classiques
-> - [Partie 3](/articles/idor-partie-3) — Techniques avancées : GraphQL, UUIDs, multi-tenant
+> **Cet article est en 3 parties :**
+> - [Partie 1](/articles/idor-partie-1) — La méthode qui marche
+> - **Partie 2** (tu es ici) — Les conneries à éviter
+> - [Partie 3](/articles/idor-partie-3) — Les trucs que presque personne explique
 
 ---
 
