@@ -88,44 +88,13 @@ GraphQL change la donne. Au lieu d'appeler des endpoints fixes, le client constr
 
 ### Le problème fondamental
 
-Le frontend demande peut-être juste ça :
-
-```graphql
-query {
-  me {
-    name
-    email
-  }
-}
-```
-
-Mais le schéma GraphQL expose peut-être :
-
-```graphql
-type User {
-  id: ID!
-  name: String!
-  email: String!
-  phone: String
-  creditCards: [CreditCard!]
-  role: String!
-  passwordHash: String  # oups
-}
-
-type Query {
-  me: User
-  user(id: ID!): User    # accessible à tous ?
-  users: [User!]         # liste tous les users ?
-}
-```
+Le frontend demande peut-être juste ton nom et ton email via la query `me`. Mais le schéma GraphQL expose probablement beaucoup plus : une query `user(id)` qui prend n'importe quel ID, une query `users` qui liste tout le monde, et des champs comme `phone`, `creditCards`, ou même `passwordHash` que le frontend n'utilise jamais mais qui sont quand même accessibles.
 
 Le dev a sécurisé `me`. Il a oublié que `user(id)` existe aussi dans le schéma. Ou il pensait que personne irait regarder.
 
 ### Ce que tu fais
 
-**1. Introspection d'abord**
-
-Avant tout, tu veux voir le schéma complet :
+Tu commences par l'introspection. Si elle est activée (souvent le cas en dev, parfois oubliée en prod), tu peux voir le schéma complet avec une simple query `__schema`. Ça te montre toutes les queries disponibles, tous les types, tous les champs. Cherche les queries avec des arguments `id`, `userId`, `documentId` — c'est là que les IDOR se cachent.
 
 ```graphql
 {
@@ -141,79 +110,15 @@ Avant tout, tu veux voir le schéma complet :
 }
 ```
 
-Si l'introspection est activée (souvent le cas en dev, parfois oublié en prod), tu vois tout ce que l'API expose. Cherche les queries avec des arguments `id`, `userId`, `documentId` — c'est là que les IDOR se cachent.
+Ensuite tu testes l'accès direct. Le frontend utilise `me`, toi tu testes `user(id: "456")` avec l'ID d'un autre utilisateur. Tu demandes tous les champs que tu peux : email, phone, creditCards, role, tout ce qui est dans le schéma.
 
-**2. Accès direct**
+Tu peux aussi faire de l'over-fetching : même quand t'accèdes légitimement à une ressource, demande des champs que le frontend n'utilise pas. Un post a peut-être un champ `author.internalNotes` qui n'est jamais affiché mais qui est quand même accessible.
 
-Le frontend utilise `me`, toi tu testes `user(id)` :
+GraphQL permet aussi de traverser les relations avec des nested queries. Si tu peux accéder à un post, tu peux peut-être accéder aux commentaires de ce post, puis aux auteurs de ces commentaires, puis aux messages privés de ces auteurs. C'est IDOR par traversée.
 
-```graphql
-query {
-  user(id: "456") {
-    name
-    email
-    phone
-    creditCards { number cvv }
-  }
-}
-```
+Et oublie pas les mutations. Les queries c'est la lecture, les mutations c'est l'écriture. `updateUser(id: "456", input: { role: "admin" })` — même logique, mêmes problèmes.
 
-**3. Over-fetching**
-
-Même si t'accèdes légitimement à une ressource, demande des champs que le frontend n'utilise pas :
-
-```graphql
-query {
-  post(id: "123") {
-    title
-    content
-    author {
-      email
-      phone
-      role
-      internalNotes  # le frontend demande jamais ça
-    }
-  }
-}
-```
-
-**4. Nested queries**
-
-GraphQL permet de traverser les relations. Si tu peux accéder à un post, tu peux peut-être accéder à des trucs via ce post :
-
-```graphql
-query {
-  post(id: "mon-post") {
-    comments {
-      author {
-        id
-        privateMessages {  # IDOR via traversée
-          content
-        }
-      }
-    }
-  }
-}
-```
-
-**5. Mutations**
-
-Les queries c'est la lecture. Les mutations c'est l'écriture. Même logique, mêmes problèmes :
-
-```graphql
-mutation {
-  updateUser(id: "456", input: { role: "admin" }) {
-    id
-    role
-  }
-}
-```
-
-### Les outils
-
-- **GraphQL Voyager** : visualise le schéma en graphe
-- **InQL** (extension Burp) : scan automatique des vulns GraphQL
-- **graphql-cop** : détecte les misconfigs
+Côté outils, GraphQL Voyager te permet de visualiser le schéma en graphe, InQL (extension Burp) fait du scan automatique, et graphql-cop détecte les misconfigs.
 
 ---
 
@@ -223,17 +128,16 @@ Les WebSockets, c'est la communication temps réel. Chat, notifications, dashboa
 
 ### Pourquoi c'est vulnérable
 
-Trois raisons :
-
 L'auth est faite au handshake. Le serveur vérifie ton token quand tu te connectes, puis il traite tous tes messages sans re-vérifier. Comme si un videur te checkait à l'entrée du club et qu'après tu pouvais aller dans toutes les salles VIP.
 
-Pas de verbes HTTP. En REST, GET et DELETE sont distincts. En WebSocket, tout est un "message" avec du JSON. C'est plus facile d'oublier les checks quand tout ressemble à tout.
+Y'a pas de verbes HTTP non plus. En REST, GET et DELETE sont distincts. En WebSocket, tout est un "message" avec du JSON. C'est plus facile d'oublier les checks quand tout ressemble à tout.
 
-Moins de tooling. Les proxies et scanners sont moins matures pour WebSocket. Les devs testent moins, les hunters aussi.
+Et le tooling est moins mature. Les proxies et scanners sont moins bons pour WebSocket que pour HTTP. Les devs testent moins, les hunters aussi.
 
 ### À quoi ça ressemble
 
-Côté client :
+Côté client, tu ouvres une connexion WebSocket avec un token dans l'URL, et tu envoies des messages JSON :
+
 ```javascript
 const ws = new WebSocket('wss://app.example.com/ws?token=abc123');
 
@@ -243,7 +147,8 @@ ws.send(JSON.stringify({
 }));
 ```
 
-Côté serveur (vulnérable) :
+Côté serveur, le code vulnérable ressemble à ça : il vérifie le token au handshake, puis il traite tous les messages sans vérifier que le user a le droit d'accéder au document demandé.
+
 ```javascript
 wss.on('connection', (ws, req) => {
   const token = new URL(req.url, 'http://x').searchParams.get('token');
@@ -266,23 +171,11 @@ wss.on('connection', (ws, req) => {
 });
 ```
 
-L'auth est faite au handshake. Après, tous les messages sont traités sans vérifier que le user a le droit d'accéder au document demandé.
-
 ### Comment tu testes
 
-Intercepte le trafic WebSocket (Caido et Burp le font). Cherche les messages avec des IDs. Change les IDs. Observe.
+Intercepte le trafic WebSocket avec Caido ou Burp — ils le font très bien maintenant. Cherche les messages avec des IDs dedans. Change les IDs. Observe ce qui revient.
 
-Un exemple concret — une app de chat :
-
-```javascript
-// Message légitime
-ws.send(JSON.stringify({ type: 'joinRoom', roomId: 'room-123' }));
-
-// IDOR : tu rejoins la room privée de quelqu'un d'autre
-ws.send(JSON.stringify({ type: 'joinRoom', roomId: 'room-456' }));
-```
-
-Si ça marche, tu reçois tous les messages de cette room. Boom.
+Une app de chat par exemple : tu envoies `{ type: 'joinRoom', roomId: 'room-123' }` pour rejoindre ta room, puis tu essaies avec `room-456` qui est la room privée de quelqu'un d'autre. Si ça marche, tu reçois tous leurs messages. Boom.
 
 ---
 
@@ -304,7 +197,7 @@ Cette fonction est marquée `'use server'`, donc elle s'exécute côté serveur.
 
 Le dev voit une fonction. Toi tu vois un endpoint HTTP non protégé.
 
-Pour tester, intercepte les requêtes quand tu déclenches l'action depuis le frontend. Tu verras des POST vers des URLs style `/_next/actions/...` avec des payloads. Modifie les IDs dans le payload.
+Pour tester, intercepte les requêtes quand tu déclenches l'action depuis le frontend. Tu verras des POST vers des URLs style `/_next/actions/...` avec des payloads JSON. Modifie les IDs dans le payload et regarde ce qui se passe.
 
 ---
 
@@ -312,47 +205,25 @@ Pour tester, intercepte les requêtes quand tu déclenches l'action depuis le fr
 
 "On utilise des UUIDs, c'est impossible à deviner."
 
-C'est vrai pour les UUID v4 (aléatoires). C'est faux pour les UUID v1.
+C'est vrai pour les UUID v4, qui sont aléatoires. C'est faux pour les UUID v1, qui sont basés sur le temps.
 
 ### La différence
 
-Un UUID ressemble à ça : `550e8400-e29b-11d4-a716-446655440000`
-
-Le 13ème caractère te dit la version :
-- `1` → UUID v1 (basé sur le temps)
-- `4` → UUID v4 (aléatoire)
-
-UUID v1 : `550e8400-e29b-`**1**`1d4-a716-...`  
-UUID v4 : `550e8400-e29b-`**4**`1d4-a716-...`
+Un UUID ressemble à `550e8400-e29b-11d4-a716-446655440000`. Le 13ème caractère te dit la version. Un `1` à cette position, c'est UUID v1 (basé sur le temps). Un `4`, c'est UUID v4 (aléatoire).
 
 ### Pourquoi UUID v1 est vulnérable
 
-Un UUID v1 est construit à partir du timestamp + clock sequence + adresse MAC de la machine. Le timestamp est encodé dans les trois premiers groupes.
-
-Si deux UUIDs v1 sont générés sur la même machine à des moments proches, leurs timestamps seront proches. Et si tu connais deux UUIDs générés "autour" d'un troisième, tu peux calculer l'intervalle.
+Un UUID v1 est construit à partir du timestamp, du clock sequence, et de l'adresse MAC de la machine. Le timestamp est encodé dans les trois premiers groupes. Du coup, si deux UUIDs v1 sont générés sur la même machine à des moments proches, leurs timestamps seront proches. Et si tu connais deux UUIDs générés "autour" d'un troisième, tu peux calculer l'intervalle.
 
 ### Le scénario classique
 
-Tu veux le lien de reset password d'une victime.
+Tu veux le lien de reset password d'une victime. Tu demandes un reset pour ton compte et tu récupères l'UUID du lien (UUID1). Ensuite tu demandes un reset pour la victime — elle reçoit un lien avec un UUID que tu connais pas. Puis tu demandes un autre reset pour toi et tu récupères UUID2.
 
-1. Tu demandes un reset pour **ton** compte → Tu reçois un lien avec un UUID (t'appelles ça UUID1)
-2. Tu demandes un reset pour la **victime** → Elle reçoit un lien avec un UUID inconnu
-3. Tu demandes un autre reset pour **toi** → Tu reçois UUID2
+L'UUID de la victime est sandwiché entre UUID1 et UUID2. Si l'intervalle de temps est petit (quelques secondes), l'espace de recherche devient gérable.
 
-L'UUID de la victime est "sandwiché" entre UUID1 et UUID2. Si l'intervalle est petit (quelques secondes), l'espace de recherche devient gérable.
+L'équipe L&H Security a publié [sandwich](https://github.com/Lupin-Holmes/sandwich) pour automatiser ça. Tu lui files tes deux UUIDs et il génère tous les UUIDs possibles dans l'intervalle.
 
-### L'outil
-
-L'équipe L&H Security a publié [sandwich](https://github.com/Lupin-Holmes/sandwich) — tu lui files tes deux UUIDs et il génère tous les UUIDs possibles dans l'intervalle.
-
-Évidemment, ça marche que si :
-- C'est vraiment des UUID v1
-- Ils sont générés sur la même machine
-- L'intervalle est petit
-- Y'a pas de rate limiting agressif
-- Le programme autorise ce type de test
-
-En bug bounty, tu vas rarement bruteforcer en prod. L'objectif c'est surtout de prouver que les UUIDs sont v1 et que l'intervalle est exploitable. Ça suffit souvent pour un rapport.
+Évidemment, ça marche que si c'est vraiment des UUID v1, s'ils sont générés sur la même machine, si l'intervalle est petit, s'il y a pas de rate limiting agressif, et si le programme autorise ce type de test. En bug bounty, tu vas rarement bruteforcer en prod — l'objectif c'est surtout de prouver que les UUIDs sont v1 et que l'intervalle est exploitable. Ça suffit souvent pour un rapport.
 
 ---
 
@@ -360,30 +231,19 @@ En bug bounty, tu vas rarement bruteforcer en prod. L'objectif c'est surtout de 
 
 Les apps SaaS ont des organisations. Chaque org a ses users, ses données, son espace. En théorie. En pratique, l'isolation est souvent une illusion.
 
-### Les trois niveaux d'IDs
-
-Dans une app multi-tenant, t'as généralement :
-- `user_id` : l'utilisateur
-- `org_id` : l'organisation
-- `resource_id` : la ressource (document, projet, etc.)
-
-Les devs pensent souvent à vérifier le `user_id`. Ils oublient le `org_id`.
+Dans une app multi-tenant, t'as généralement un `user_id` pour l'utilisateur, un `org_id` pour l'organisation, et des `resource_id` pour les ressources. Les devs pensent souvent à vérifier le user_id. Ils oublient l'org_id.
 
 ### L'attaque
 
-T'as deux comptes dans deux orgs différentes. Compte A dans Org-1, Compte B dans Org-2.
-
-1. Avec le compte A, tu crées une ressource et tu notes son ID
-2. Tu te connectes avec le compte B (autre org)
-3. Tu essaies d'accéder à la ressource du compte A
+T'as deux comptes dans deux orgs différentes. Compte A dans Org-1, Compte B dans Org-2. Avec le compte A, tu crées une ressource et tu notes son ID. Tu te connectes avec le compte B (autre org). Tu essaies d'accéder à la ressource du compte A.
 
 Si ça marche, t'as une IDOR cross-tenant. C'est généralement critique parce que ça casse l'isolation entre clients.
 
 ### Où chercher
 
-Les endpoints d'admin sont souvent moins bien protégés. `/api/admin/users`, `/api/admin/settings`, `/api/admin/billing`. Les devs mettent un check "is_admin" mais oublient de vérifier que l'admin appartient à la bonne org.
+Les endpoints d'admin sont souvent moins bien protégés. `/api/admin/users`, `/api/admin/settings`, `/api/admin/billing` — les devs mettent un check "is_admin" mais oublient de vérifier que l'admin appartient à la bonne org.
 
-Les fonctionnalités de partage aussi. "Inviter un user dans l'org", "Partager un document avec une autre org". Ces features traversent volontairement les frontières d'isolation, donc les checks sont plus complexes et souvent incomplets.
+Les fonctionnalités de partage aussi. "Inviter un user dans l'org", "Partager un document avec une autre org" — ces features traversent volontairement les frontières d'isolation, donc les checks sont plus complexes et souvent incomplets.
 
 ---
 
@@ -391,52 +251,21 @@ Les fonctionnalités de partage aussi. "Inviter un user dans l'org", "Partager u
 
 L'IDOR c'est bien, mais faut savoir quand passer à autre chose.
 
-### Continue si...
+Continue si les IDs sont séquentiels (`user_id=1, 2, 3...`) parce que l'énumération est triviale et y'a forcément des trucs à trouver. Continue si l'app utilise de l'auth maison (JWT custom, sessions bricolées) parce que le code custom a plus de chances d'avoir des trous que les frameworks matures. Continue si les erreurs sont verbeuses — une app qui te dit "User 123 not found" vs "Access denied to user 456" fait son access control au cas par cas, pas de manière systématique. Continue si c'est une app legacy ou une startup early-stage — les vieilles apps ont de la dette technique, les startups ont sacrifié la sécurité pour la vitesse.
 
-**Les IDs sont séquentiels.** `user_id=1, 2, 3...` — l'énumération est triviale, y'a forcément des trucs à trouver.
-
-**L'app utilise de l'auth maison.** JWT custom, sessions bricolées, tokens faits main. Les frameworks matures (Rails, Django, Spring Security) ont des patterns d'autorisation battle-tested. Le code custom a plus de chances d'avoir des trous.
-
-**Les erreurs sont verbeuses.** Si l'app te dit "User 123 not found" vs "Access denied to user 456", ça veut dire que l'access control est fait au cas par cas, pas de manière systématique.
-
-**C'est une app legacy ou une startup early-stage.** Les vieilles apps ont de la dette technique. Les startups en MVP ont sacrifié la sécurité pour la vitesse. Dans les deux cas, jackpot probable.
-
-### Passe à autre chose si...
-
-**UUID v4 partout et aucun leak.** Si tous les IDs sont des UUIDs v4, qu'ils n'apparaissent nulle part, et que tu peux pas les deviner, les chances sont faibles.
-
-**Les réponses sont uniformes.** L'app retourne 404 que la ressource existe ou non ? Elle a été conçue avec la sécurité en tête.
-
-**Rate limiting agressif.** Tu te fais ban après 10 requêtes ? Va falloir être créatif ou passer à autre chose.
-
-**T'as passé 4h sans rien trouver.** Le temps c'est de l'argent. Si t'as testé méthodiquement pendant 4h sur une app moderne avec tous les signaux négatifs, ta probabilité de succès en continuant est proche de zéro.
+Passe à autre chose si c'est UUID v4 partout sans aucun leak — si tu peux pas deviner les IDs, les chances sont faibles. Passe à autre chose si les réponses sont uniformes — une app qui retourne 404 que la ressource existe ou non a été conçue avec la sécurité en tête. Passe à autre chose si le rate limiting est agressif — tu te fais ban après 10 requêtes, ça va être compliqué. Et passe à autre chose si t'as passé 4h sans rien trouver sur une app moderne avec tous les signaux négatifs — le temps c'est de l'argent.
 
 ---
 
 ## Avant de reporter
 
-Quelques questions à te poser :
-
-T'as testé sur TES ressources d'abord ? Tu devrais jamais supprimer ou modifier les données d'autres users.
-
-T'as des preuves reproductibles ? Des requêtes curl, des screenshots, pas juste "j'ai vu un truc".
-
-T'as vérifié que c'est pas un comportement attendu ? Des profils publics, des données partagées volontairement, ça existe.
-
-T'as cherché l'escalade ? Une IDOR de lecture c'est bien. Une IDOR de lecture qui mène à une IDOR d'écriture qui mène à un account takeover, c'est mieux.
-
-Ton rapport explique l'impact business ? "Je peux lire les documents des autres users" c'est technique. "Un attaquant peut accéder aux contrats confidentiels de n'importe quel client" c'est business.
+T'as testé sur TES ressources d'abord ? Tu devrais jamais supprimer ou modifier les données d'autres users. T'as des preuves reproductibles ? Des requêtes curl, des screenshots, pas juste "j'ai vu un truc". T'as vérifié que c'est pas un comportement attendu ? Des profils publics, des données partagées volontairement, ça existe. T'as cherché l'escalade ? Une IDOR de lecture c'est bien, une IDOR de lecture qui mène à une IDOR d'écriture qui mène à un account takeover, c'est mieux. Ton rapport explique l'impact business ? "Je peux lire les documents des autres users" c'est technique, "Un attaquant peut accéder aux contrats confidentiels de n'importe quel client" c'est business.
 
 ---
 
 ## Ressources
 
-Si t'as lu jusqu'ici et que t'en veux encore :
-
-- [PortSwigger Academy — Access Control](https://portswigger.net/web-security/access-control) : des labs pour pratiquer
-- [Sandwich Attack — L&H Security](https://www.landh.tech/blog/20230811-sandwich-attack/) : l'attaque UUID v1 en détail
-- [HackTricks — IDOR](https://book.hacktricks.wiki/en/pentesting-web/idor.html) : référence technique
-- [Caido Autorize](https://github.com/caido-community/autorize) : le plugin dont on a parlé en partie 2
+Si t'as lu jusqu'ici et que t'en veux encore : [PortSwigger Academy](https://portswigger.net/web-security/access-control) pour des labs pratiques, [l'article de L&H Security](https://www.landh.tech/blog/20230811-sandwich-attack/) sur l'attaque sandwich, [HackTricks](https://book.hacktricks.wiki/en/pentesting-web/idor.html) comme référence technique, et [Autorize](https://github.com/caido-community/autorize) dont on a parlé en partie 2.
 
 ---
 
