@@ -546,5 +546,5 @@ Résultat :
 
 > [!INFO]
 > **Navigation :**
-> - [← Partie 1 : Les fondamentaux](/articles/idor-partie-1)
-> - [Partie 3 : Techniques avancées →](/articles/idor-partie-3)
+> - [← La méthode qui marche](/articles/idor-partie-1)
+> - [Les trucs que presque personne explique →](/articles/idor-partie-3)

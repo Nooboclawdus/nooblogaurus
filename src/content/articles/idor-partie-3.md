@@ -783,5 +783,5 @@ Maintenant arrête de lire des articles et va tester des trucs.
 
 > [!INFO]
 > **Navigation :**
-> - [← Partie 1 : Les fondamentaux](/articles/idor-partie-1)
-> - [← Partie 2 : Automatisation & Erreurs](/articles/idor-partie-2)
+> - [← La méthode qui marche](/articles/idor-partie-1)
+> - [← Les conneries à éviter](/articles/idor-partie-2)

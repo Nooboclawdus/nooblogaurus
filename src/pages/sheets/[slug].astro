@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { marked } from 'marked';
+import hljs from 'highlight.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -113,6 +114,15 @@ try {
   }
 }
 
+// Custom renderer for syntax highlighting
+const renderer = new marked.Renderer();
+renderer.code = function({ text, lang }) {
+  const language = lang && hljs.getLanguage(lang) ? lang : 'bash';
+  const highlighted = hljs.highlight(text, { language }).value;
+  return `<pre><code class="hljs language-${language}">${highlighted}</code></pre>`;
+};
+
+marked.use({ renderer });
 const htmlContent = marked.parse(mdContent);
 ---
 

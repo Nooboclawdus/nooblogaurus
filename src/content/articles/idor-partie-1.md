@@ -178,4 +178,4 @@ Pour chaque IDOR trouvée, documente immédiatement :
 ---
 
 > [!INFO]
-> **Suite** : [Partie 2 — Automatisation & Erreurs →](/articles/idor-partie-2)
+> **Suite** : [Les conneries à éviter →](/articles/idor-partie-2)
