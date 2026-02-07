@@ -93,6 +93,8 @@ Ce que tu cherches : un `200 OK` avec les données de A c'est une IDOR de lectur
 
 Pour chaque IDOR trouvée, documente immédiatement : l'endpoint exact avec méthode, URL et paramètres, la requête complète avec headers et body, la réponse obtenue, et l'impact — quelles données sont exposées, quelle action est possible.
 
+<!-- DIAGRAM:method -->
+
 ---
 
 > [!INFO]

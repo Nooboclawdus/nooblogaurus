@@ -100,7 +100,12 @@ renderer.blockquote = function({ raw, text }) {
 };
 
 marked.use({ renderer });
-const htmlContent = marked.parse(mdContent);
+
+// Split content at diagram marker
+const DIAGRAM_MARKER = '<!-- DIAGRAM:method -->';
+const [contentBefore, contentAfter] = mdContent.split(DIAGRAM_MARKER);
+const htmlBefore = marked.parse(contentBefore);
+const htmlAfter = contentAfter ? marked.parse(contentAfter) : '';
 ---
 
 <Layout title={article.title} description={article.description}>
@@ -138,11 +143,14 @@ const htmlContent = marked.parse(mdContent);
         </div>
       </header>
       
+      <!-- Content Before Diagram -->
+      <div class="prose-article" set:html={htmlBefore} />
+      
       <!-- Diagram -->
       <IDORMethodDiagram />
       
-      <!-- Content -->
-      <div class="prose-article" set:html={htmlContent} />
+      <!-- Content After Diagram -->
+      {htmlAfter && <div class="prose-article" set:html={htmlAfter} />}
       
       <!-- Back link -->
       <div class="mt-12 pt-8 border-t border-[var(--color-border)]">
