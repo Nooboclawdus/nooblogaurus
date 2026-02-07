@@ -3,7 +3,6 @@ import Layout from '../../layouts/Layout.astro';
 import IDORSurfacesDiagram from '../../components/diagrams/IDORSurfacesDiagram.astro';
 import UUIDComparisonDiagram from '../../components/diagrams/UUIDComparisonDiagram.astro';
 import GraphQLSurfaceDiagram from '../../components/diagrams/GraphQLSurfaceDiagram.astro';
-import DecisionTreeDiagram from '../../components/diagrams/DecisionTreeDiagram.astro';
 import { marked } from 'marked';
 import hljs from 'highlight.js';
 import fs from 'fs';
@@ -107,8 +106,7 @@ marked.use({ renderer });
 const DIAGRAM_MARKERS = [
   '<!-- DIAGRAM:surfaces -->',
   '<!-- DIAGRAM:graphql -->',
-  '<!-- DIAGRAM:uuid -->',
-  '<!-- DIAGRAM:decision -->'
+  '<!-- DIAGRAM:uuid -->'
 ];
 
 interface ContentSection {
@@ -199,8 +197,6 @@ const contentSections = splitAtMarkers(mdContent, DIAGRAM_MARKERS);
           return <GraphQLSurfaceDiagram />;
         } else if (section.diagram === 'uuid') {
           return <UUIDComparisonDiagram />;
-        } else if (section.diagram === 'decision') {
-          return <DecisionTreeDiagram />;
         }
       })}
       

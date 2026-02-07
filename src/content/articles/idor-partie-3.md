@@ -257,8 +257,6 @@ Les fonctionnalités de partage aussi. "Inviter un user dans l'org", "Partager u
 
 L'IDOR c'est bien, mais faut savoir quand passer à autre chose.
 
-<!-- DIAGRAM:decision -->
-
 Continue si les IDs sont séquentiels (`user_id=1, 2, 3...`) parce que l'énumération est triviale et y'a forcément des trucs à trouver. Continue si l'app utilise de l'auth maison (JWT custom, sessions bricolées) parce que le code custom a plus de chances d'avoir des trous que les frameworks matures. Continue si les erreurs sont verbeuses — une app qui te dit "User 123 not found" vs "Access denied to user 456" fait son access control au cas par cas, pas de manière systématique. Continue si c'est une app legacy ou une startup early-stage — les vieilles apps ont de la dette technique, les startups ont sacrifié la sécurité pour la vitesse.
 
 Passe à autre chose si c'est UUID v4 partout sans aucun leak — si tu peux pas deviner les IDs, les chances sont faibles. Passe à autre chose si les réponses sont uniformes — une app qui retourne 404 que la ressource existe ou non a été conçue avec la sécurité en tête. Passe à autre chose si le rate limiting est agressif — tu te fais ban après 10 requêtes, ça va être compliqué. Et passe à autre chose si t'as passé 4h sans rien trouver sur une app moderne avec tous les signaux négatifs — le temps c'est de l'argent.
