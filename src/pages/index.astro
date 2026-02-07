@@ -1,0 +1,121 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import ToolCard from '../components/ToolCard.astro';
+
+// TODO: Replace with content collections
+const articles = [
+  {
+    title: "IDOR : Le guide pour ceux qui en ont marre des guides IDOR",
+    description: "Comment j'ai arrêté de lire 'changez le 1 en 2' et commencé à trouver des trucs. La méthode qui marche, les erreurs qui te font perdre du temps, et du code réel.",
+    slug: "idor-guide-complet",
+    date: "2026-02-07",
+    tags: ["IDOR", "Bug Bounty", "Guide"],
+    readingTime: "25 min"
+  }
+];
+
+const tools = [
+  {
+    name: "Navarro",
+    description: "OSINT username checker - Vérifie la présence d'un username sur de multiples plateformes.",
+    slug: "navarro",
+    github: "https://github.com/noobosaurus-r3x/Navarro",
+    tags: ["OSINT", "Python"]
+  },
+  {
+    name: "DNSpector",
+    description: "Outil d'analyse et d'énumération DNS pour la reconnaissance.",
+    slug: "dnspector",
+    github: "https://github.com/noobosaurus-r3x/DNSpector",
+    tags: ["DNS", "Recon"]
+  },
+  {
+    name: "RedFlagger",
+    description: "Agrégateur de rapports red.flag.domains pour le monitoring de domaines malveillants.",
+    slug: "redflagger",
+    github: "https://github.com/noobosaurus-r3x/redflagger",
+    tags: ["Bash", "Monitoring"]
+  }
+];
+---
+
+<Layout title="Home">
+  <!-- Hero -->
+  <section class="py-12 md:py-20">
+    <div class="flex flex-col md:flex-row items-center gap-8">
+      <img 
+        src="/logo.png" 
+        alt="Noobosaurus R3x" 
+        class="w-32 h-32 md:w-40 md:h-40 rounded-full border-2 border-[var(--color-accent)]"
+      />
+      <div>
+        <h1 class="text-3xl md:text-4xl font-bold mb-4">
+          <span class="text-[var(--color-text-muted)] font-mono">&gt;</span> 
+          <span class="text-[var(--color-accent)]">Noobosaurus</span> R3x
+        </h1>
+        <p class="text-lg text-[var(--color-text-muted)] mb-4 font-mono">
+          Bug bounty hunter • Security researcher • Tool maker
+        </p>
+        <p class="text-[var(--color-text-muted)] max-w-xl">
+          Je casse des trucs pour les rendre plus solides. Articles, cheat sheets, 
+          et outils pour la communauté security.
+        </p>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Latest Articles -->
+  <section class="py-8">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-semibold font-mono">
+        <span class="text-[var(--color-accent)]">#</span> Articles récents
+      </h2>
+      <a href="/articles" class="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-accent)] font-mono">
+        Voir tout →
+      </a>
+    </div>
+    
+    <div class="grid gap-4">
+      {articles.map(article => (
+        <ArticleCard {...article} />
+      ))}
+    </div>
+  </section>
+  
+  <!-- Tools -->
+  <section class="py-8">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-semibold font-mono">
+        <span class="text-[var(--color-accent)]">#</span> Outils
+      </h2>
+      <a href="/tools" class="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-accent)] font-mono">
+        Voir tout →
+      </a>
+    </div>
+    
+    <div class="grid md:grid-cols-3 gap-4">
+      {tools.map(tool => (
+        <ToolCard {...tool} />
+      ))}
+    </div>
+  </section>
+  
+  <!-- Terminal decoration -->
+  <section class="py-8">
+    <div class="border border-[var(--color-border)] rounded-lg p-6 bg-[var(--color-bg-alt)] font-mono text-sm">
+      <div class="flex items-center gap-2 mb-4">
+        <div class="w-3 h-3 rounded-full bg-[var(--color-danger)]"></div>
+        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+        <div class="w-3 h-3 rounded-full bg-[var(--color-accent)]"></div>
+      </div>
+      <p class="text-[var(--color-text-muted)]">
+        <span class="text-[var(--color-accent)]">visitor@nooblogaurus</span>:<span class="text-blue-400">~</span>$ cat /etc/motd<br/>
+        <br/>
+        <span class="text-[var(--color-text)]">Welcome. Happy hacking.</span><br/>
+        <br/>
+        <span class="text-[var(--color-accent)]">visitor@nooblogaurus</span>:<span class="text-blue-400">~</span>$ <span class="cursor">▌</span>
+      </p>
+    </div>
+  </section>
+</Layout>

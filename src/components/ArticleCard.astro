@@ -1,0 +1,47 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  slug: string;
+  date: string;
+  tags?: string[];
+  readingTime?: string;
+}
+
+const { title, description, slug, date, tags = [], readingTime } = Astro.props;
+
+const formattedDate = new Date(date).toLocaleDateString('fr-FR', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric'
+});
+---
+
+<article class="group border border-[var(--color-border)] rounded-lg p-5 bg-[var(--color-bg-card)] hover:border-[var(--color-accent-dim)] transition-colors">
+  <a href={`/articles/${slug}`} class="block">
+    <div class="flex items-start justify-between gap-4 mb-3">
+      <h3 class="font-semibold text-lg text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors">
+        {title}
+      </h3>
+    </div>
+    
+    <p class="text-[var(--color-text-muted)] text-sm mb-4 line-clamp-2">
+      {description}
+    </p>
+    
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2 flex-wrap">
+        {tags.slice(0, 3).map(tag => (
+          <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)] text-[var(--color-accent)]">
+            {tag}
+          </span>
+        ))}
+      </div>
+      
+      <div class="flex items-center gap-3 text-xs text-[var(--color-text-muted)] font-mono">
+        {readingTime && <span>{readingTime}</span>}
+        <span>{formattedDate}</span>
+      </div>
+    </div>
+  </a>
+</article>

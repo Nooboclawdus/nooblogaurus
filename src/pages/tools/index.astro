@@ -1,0 +1,45 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ToolCard from '../../components/ToolCard.astro';
+
+const tools = [
+  {
+    name: "Navarro",
+    description: "OSINT username checker - Vérifie la présence d'un username sur de multiples plateformes.",
+    slug: "navarro",
+    github: "https://github.com/noobosaurus-r3x/Navarro",
+    tags: ["OSINT", "Python"]
+  },
+  {
+    name: "DNSpector",
+    description: "Outil d'analyse et d'énumération DNS pour la reconnaissance.",
+    slug: "dnspector",
+    github: "https://github.com/noobosaurus-r3x/DNSpector",
+    tags: ["DNS", "Recon"]
+  },
+  {
+    name: "RedFlagger",
+    description: "Agrégateur de rapports red.flag.domains pour le monitoring de domaines malveillants.",
+    slug: "redflagger",
+    github: "https://github.com/noobosaurus-r3x/redflagger",
+    tags: ["Bash", "Monitoring"]
+  }
+];
+---
+
+<Layout title="Tools" description="Outils open source pour l'OSINT, le bug bounty et la sécurité.">
+  <section class="py-8">
+    <h1 class="text-3xl font-bold mb-2">
+      <span class="text-[var(--color-text-muted)] font-mono">&gt;</span> Tools
+    </h1>
+    <p class="text-[var(--color-text-muted)] mb-8">
+      Outils open source que j'ai développés pour le bug bounty et la sécurité.
+    </p>
+    
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {tools.map(tool => (
+        <ToolCard {...tool} />
+      ))}
+    </div>
+  </section>
+</Layout>

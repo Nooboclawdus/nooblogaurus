@@ -1,0 +1,79 @@
+---
+const navLinks = [
+  { href: '/', label: 'Home' },
+  { href: '/articles', label: 'Articles' },
+  { href: '/sheets', label: 'Sheets' },
+  { href: '/tools', label: 'Tools' },
+  { href: '/about', label: 'About' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<nav class="border-b border-[var(--color-border)] bg-[var(--color-bg)]">
+  <div class="max-w-5xl mx-auto px-4">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-3 hover:opacity-100">
+        <img src="/logo.png" alt="Nooblogaurus" class="w-10 h-10 rounded-full" />
+        <span class="font-mono font-semibold text-[var(--color-accent)]">
+          <span class="text-[var(--color-text-muted)]">&gt;</span> nooblogaurus
+        </span>
+      </a>
+      
+      <!-- Desktop nav -->
+      <div class="hidden md:flex items-center gap-6">
+        {navLinks.map(link => (
+          <a 
+            href={link.href}
+            class:list={[
+              "font-mono text-sm transition-colors",
+              currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href))
+                ? "text-[var(--color-accent)]"
+                : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+            ]}
+          >
+            {link.label}
+          </a>
+        ))}
+      </div>
+      
+      <!-- Mobile menu button -->
+      <button 
+        id="mobile-menu-btn"
+        class="md:hidden p-2 text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+        aria-label="Menu"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Mobile nav -->
+    <div id="mobile-menu" class="hidden md:hidden pb-4">
+      {navLinks.map(link => (
+        <a 
+          href={link.href}
+          class:list={[
+            "block py-2 font-mono text-sm",
+            currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href))
+              ? "text-[var(--color-accent)]"
+              : "text-[var(--color-text-muted)]"
+          ]}
+        >
+          <span class="text-[var(--color-text-muted)]">&gt;</span> {link.label}
+        </a>
+      ))}
+    </div>
+  </div>
+</nav>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  
+  btn?.addEventListener('click', () => {
+    menu?.classList.toggle('hidden');
+  });
+</script>

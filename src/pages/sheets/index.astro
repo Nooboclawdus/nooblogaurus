@@ -1,0 +1,61 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SheetCard from '../../components/SheetCard.astro';
+
+// TODO: Import from Cheat-sheets repo
+const sheets = [
+  {
+    title: "XSS Cheat Sheet",
+    description: "Payloads, bypasses et techniques pour Cross-Site Scripting.",
+    slug: "xss",
+    category: "Web"
+  },
+  {
+    title: "SQL Injection",
+    description: "Syntaxes, payloads et techniques d'injection SQL.",
+    slug: "sqli",
+    category: "Web"
+  },
+  {
+    title: "Subdomain Enumeration",
+    description: "Outils et techniques pour l'énumération de sous-domaines.",
+    slug: "subdomain-enum",
+    category: "Recon"
+  },
+  {
+    title: "Linux Privilege Escalation",
+    description: "Checklist et techniques pour l'escalade de privilèges Linux.",
+    slug: "linux-privesc",
+    category: "Privesc"
+  }
+];
+
+const categories = [...new Set(sheets.map(s => s.category).filter(Boolean))];
+---
+
+<Layout title="Cheat Sheets" description="Références rapides pour le pentesting et le bug bounty.">
+  <section class="py-8">
+    <h1 class="text-3xl font-bold mb-2">
+      <span class="text-[var(--color-text-muted)] font-mono">&gt;</span> Cheat Sheets
+    </h1>
+    <p class="text-[var(--color-text-muted)] mb-8">
+      Références rapides pour le pentesting et le bug bounty. Quick and dirty.
+    </p>
+    
+    <!-- Categories filter -->
+    <div class="flex items-center gap-2 flex-wrap mb-8">
+      <span class="text-sm text-[var(--color-text-muted)] font-mono">Catégories:</span>
+      {categories.map(cat => (
+        <button class="text-xs font-mono px-3 py-1 rounded-full border border-[var(--color-border)] text-[var(--color-text-muted)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors">
+          {cat}
+        </button>
+      ))}
+    </div>
+    
+    <div class="grid md:grid-cols-2 gap-4">
+      {sheets.map(sheet => (
+        <SheetCard {...sheet} />
+      ))}
+    </div>
+  </section>
+</Layout>

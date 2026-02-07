@@ -1,0 +1,34 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  slug: string;
+  category?: string;
+}
+
+const { title, description, slug, category } = Astro.props;
+---
+
+<article class="group border border-[var(--color-border)] rounded-lg p-5 bg-[var(--color-bg-card)] hover:border-[var(--color-accent-dim)] transition-colors">
+  <a href={`/sheets/${slug}`} class="block">
+    <div class="flex items-center gap-3 mb-3">
+      <div class="w-10 h-10 rounded-lg bg-[var(--color-bg-alt)] flex items-center justify-center text-[var(--color-accent)]">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      </div>
+      <div>
+        <h3 class="font-semibold text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors">
+          {title}
+        </h3>
+        {category && (
+          <span class="text-xs font-mono text-[var(--color-text-muted)]">{category}</span>
+        )}
+      </div>
+    </div>
+    
+    <p class="text-[var(--color-text-muted)] text-sm">
+      {description}
+    </p>
+  </a>
+</article>

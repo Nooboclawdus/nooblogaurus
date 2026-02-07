@@ -1,0 +1,52 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+
+// TODO: Replace with content collections
+const articles = [
+  {
+    title: "IDOR : Le guide pour ceux qui en ont marre des guides IDOR",
+    description: "Comment j'ai arrêté de lire 'changez le 1 en 2' et commencé à trouver des trucs. La méthode qui marche, les erreurs qui te font perdre du temps, et du code réel.",
+    slug: "idor-guide-complet",
+    date: "2026-02-07",
+    tags: ["IDOR", "Bug Bounty", "Guide"],
+    readingTime: "25 min"
+  }
+];
+
+const allTags = [...new Set(articles.flatMap(a => a.tags || []))];
+---
+
+<Layout title="Articles" description="Guides, analyses et writeups sur le bug bounty et la sécurité web.">
+  <section class="py-8">
+    <h1 class="text-3xl font-bold mb-2">
+      <span class="text-[var(--color-text-muted)] font-mono">&gt;</span> Articles
+    </h1>
+    <p class="text-[var(--color-text-muted)] mb-8">
+      Guides, analyses et réflexions sur le bug bounty et la sécurité web.
+    </p>
+    
+    <!-- Tags filter -->
+    <div class="flex items-center gap-2 flex-wrap mb-8">
+      <span class="text-sm text-[var(--color-text-muted)] font-mono">Tags:</span>
+      {allTags.map(tag => (
+        <button class="text-xs font-mono px-3 py-1 rounded-full border border-[var(--color-border)] text-[var(--color-text-muted)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors">
+          {tag}
+        </button>
+      ))}
+    </div>
+    
+    <!-- Articles grid -->
+    <div class="grid gap-4">
+      {articles.map(article => (
+        <ArticleCard {...article} />
+      ))}
+    </div>
+    
+    {articles.length === 0 && (
+      <p class="text-center text-[var(--color-text-muted)] py-12 font-mono">
+        Aucun article pour le moment. <span class="text-[var(--color-accent)]">Coming soon...</span>
+      </p>
+    )}
+  </section>
+</Layout>
