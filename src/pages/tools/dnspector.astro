@@ -3,7 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 
 const tool = {
   name: "DNSpector",
-  description: "Outil d'analyse et d'énumération DNS pour la reconnaissance.",
+  description: "Outil d'énumération et d'analyse DNS pour la reconnaissance.",
   github: "https://github.com/noobosaurus-r3x/DNSpector",
   tags: ["DNS", "Recon", "Python"]
 };
@@ -46,30 +46,159 @@ const tool = {
     
     <!-- Content -->
     <div class="prose">
-      <h2>Description</h2>
+      <h2>Pourquoi DNSpector ?</h2>
       <p>
-        DNSpector est un outil de reconnaissance DNS qui permet d'analyser et d'énumérer les enregistrements DNS d'un domaine cible. Essentiel pour la phase de reconnaissance en bug bounty.
+        L'énumération DNS est une étape cruciale en reconnaissance. <code>dig</code> et <code>whois</code> sont 
+        puissants mais leur output est verbose et difficile à parser. DNSpector combine ces outils avec une 
+        sortie colorée, lisible, et des fonctionnalités d'automatisation.
+      </p>
+      <p>
+        L'outil ne réinvente pas la roue — il orchestre des utilitaires éprouvés et présente leurs résultats 
+        de manière exploitable.
       </p>
       
+      <h2>Fonctionnalités</h2>
+      <ul>
+        <li><strong>Requêtes DNS multiples</strong> : A, AAAA, CNAME, MX, NS, TXT, SOA, et 10+ autres types</li>
+        <li><strong>WHOIS intégré</strong> : Informations registrar en un flag</li>
+        <li><strong>Énumération de sous-domaines</strong> : Découverte passive via sources publiques</li>
+        <li><strong>Zone Transfer Check</strong> : Détection de misconfiguration AXFR</li>
+        <li><strong>Sortie colorée</strong> : Lecture rapide des résultats</li>
+        <li><strong>Nameserver custom</strong> : Requêtes via n'importe quel resolver</li>
+      </ul>
+
       <h2>Installation</h2>
       <pre><code>git clone https://github.com/noobosaurus-r3x/DNSpector.git
 cd DNSpector
 pip install -r requirements.txt</code></pre>
       
-      <h2>Fonctionnalités</h2>
-      <ul>
-        <li>Énumération des enregistrements DNS (A, AAAA, MX, TXT, NS, CNAME...)</li>
-        <li>Détection de sous-domaines</li>
-        <li>Analyse des configurations DNS</li>
-        <li>Export des résultats</li>
-      </ul>
+      <h2>Usage</h2>
+      <h3>Syntaxe de base</h3>
+      <pre><code>python3 DNSpector.py [target] [options]</code></pre>
       
+      <h3>Options principales</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Option</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>-r, --records</code></td>
+            <td>Types de records à requêter (A, MX, TXT, all...)</td>
+          </tr>
+          <tr>
+            <td><code>-n, --nameserver</code></td>
+            <td>Nameserver/IP custom</td>
+          </tr>
+          <tr>
+            <td><code>-w, --whois</code></td>
+            <td>Effectuer un WHOIS lookup</td>
+          </tr>
+          <tr>
+            <td><code>-sd, --subdomain</code></td>
+            <td>Énumération passive de sous-domaines</td>
+          </tr>
+          <tr>
+            <td><code>-zt, --zone-transfer</code></td>
+            <td>Tester les vulnérabilités Zone Transfer</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Exemples</h2>
+      <h3>Records A et MX</h3>
+      <pre><code>python3 DNSpector.py example.com -r A MX</code></pre>
+      
+      <h3>Tous les records</h3>
+      <pre><code>python3 DNSpector.py example.com -r all</code></pre>
+      
+      <h3>Recon complète</h3>
+      <pre><code>python3 DNSpector.py example.com -r all -w -sd -zt</code></pre>
+      
+      <h3>Via un nameserver spécifique</h3>
+      <pre><code>python3 DNSpector.py example.com -n 8.8.8.8 -r A MX TXT</code></pre>
+
+      <h2>Exemple de sortie</h2>
+      <pre><code class="language-bash">$ python3 DNSpector.py target.com -r A MX TXT -w
+
+╔══════════════════════════════════════════════════════════════╗
+║                        DNSpector                              ║
+║              DNS Enumeration & Analysis Tool                  ║
+╚══════════════════════════════════════════════════════════════╝
+
+[*] Target: target.com
+
+━━━━━━━━━━━━━━━━━━━━━ DNS RECORDS ━━━━━━━━━━━━━━━━━━━━━
+
+[A] Records:
+    → 104.21.55.123
+    → 172.67.182.45
+
+[MX] Records:
+    → 10 mail.target.com
+    → 20 mail2.target.com
+
+[TXT] Records:
+    → "v=spf1 include:_spf.google.com ~all"
+    → "google-site-verification=abc123..."
+
+━━━━━━━━━━━━━━━━━━━━━ WHOIS INFO ━━━━━━━━━━━━━━━━━━━━━
+
+Registrar:     Cloudflare, Inc.
+Created:       2019-03-15
+Expires:       2025-03-15
+Name Servers:  ns1.cloudflare.com, ns2.cloudflare.com</code></pre>
+
+      <h2>Types de records supportés</h2>
+      <div class="grid grid-cols-3 md:grid-cols-6 gap-2 not-prose my-4">
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)] text-center">A</span>
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)] text-center">AAAA</span>
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)] text-center">CNAME</span>
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)] text-center">MX</span>
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)] text-center">NS</span>
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)] text-center">TXT</span>
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)] text-center">SOA</span>
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)] text-center">PTR</span>
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)] text-center">SRV</span>
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)] text-center">CAA</span>
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)] text-center">DNSKEY</span>
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)] text-center">SPF</span>
+      </div>
+
       <h2>Cas d'usage</h2>
+      <h3>Bug Bounty - Reconnaissance</h3>
+      <p>
+        Phase initiale sur un nouveau target. Identifier les mail servers (MX), les services cloud (TXT SPF/DKIM), 
+        les CDN (CNAME), et potentiellement des sous-domaines oubliés.
+      </p>
+      
+      <h3>Zone Transfer</h3>
+      <p>
+        Une misconfiguration AXFR peut exposer l'intégralité des records DNS d'un domaine. C'est rare mais 
+        quand ça arrive, c'est une mine d'or pour la reconnaissance.
+      </p>
+      <pre><code>python3 DNSpector.py target.com -zt
+
+[!] Zone Transfer VULNERABLE on ns1.target.com
+    → admin.target.com      A    10.0.0.1
+    → staging.target.com    A    10.0.0.2
+    → vpn.target.com        A    10.0.0.3
+    ...</code></pre>
+      
+      <h3>Subdomain Discovery</h3>
+      <p>
+        L'option <code>-sd</code> effectue une énumération passive via des sources publiques 
+        (crt.sh, VirusTotal, etc.) — utile pour découvrir des assets oubliés.
+      </p>
+
+      <h2>Tips</h2>
       <ul>
-        <li>Reconnaissance initiale sur une cible</li>
-        <li>Identification de l'infrastructure</li>
-        <li>Découverte de sous-domaines cachés</li>
-        <li>Vérification des configurations DNS</li>
+        <li>Les records TXT contiennent souvent des infos intéressantes : SPF, DKIM, domain verification tokens</li>
+        <li>Comparer les résultats de différents nameservers peut révéler des incohérences</li>
+        <li>Les records CAA indiquent quelles CA peuvent émettre des certs pour le domaine</li>
       </ul>
     </div>
     

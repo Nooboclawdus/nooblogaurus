@@ -3,10 +3,9 @@ import Layout from '../../layouts/Layout.astro';
 
 const tool = {
   name: "Navarro",
-  description: "OSINT username checker - Vérifie la présence d'un username sur de multiples plateformes.",
+  description: "OSINT username checker - Vérifie la présence d'un username sur 20+ plateformes.",
   github: "https://github.com/noobosaurus-r3x/Navarro",
-  tags: ["OSINT", "Python"],
-  language: "Python"
+  tags: ["OSINT", "Python", "Recon"]
 };
 ---
 
@@ -16,7 +15,7 @@ const tool = {
     <div class="flex items-start gap-6 mb-8">
       <div class="w-16 h-16 rounded-xl bg-[var(--color-bg-alt)] flex items-center justify-center text-[var(--color-accent)] border border-[var(--color-border)]">
         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
       </div>
       <div>
@@ -47,25 +46,108 @@ const tool = {
     
     <!-- Content -->
     <div class="prose">
-      <h2>Description</h2>
+      <h2>Pourquoi Navarro ?</h2>
       <p>
-        Navarro est un outil OSINT qui permet de vérifier si un nom d'utilisateur existe sur différentes 
-        plateformes en ligne. Utile pour la reconnaissance et l'investigation.
+        En OSINT, un username est souvent le premier pivot. Une cible utilise rarement un pseudo différent 
+        sur chaque plateforme. Navarro automatise la vérification sur 20+ sites pour identifier rapidement 
+        où un utilisateur est présent — sans API keys, sans rate limiting agressif.
       </p>
       
+      <h2>Fonctionnalités</h2>
+      <ul>
+        <li><strong>20+ plateformes</strong> : GitHub, GitLab, Reddit, Instagram, TikTok, LinkedIn, Pinterest, Telegram, etc.</li>
+        <li><strong>Rate limiting intelligent</strong> : Stockage persistant entre les runs pour éviter les bans</li>
+        <li><strong>Rotation de User-Agent</strong> : Réduit la détection</li>
+        <li><strong>Batch checking</strong> : Vérification de listes de usernames via fichier</li>
+        <li><strong>Export JSON</strong> : Intégration facile avec d'autres outils</li>
+        <li><strong>Zero API keys</strong> : Fonctionne out-of-the-box</li>
+      </ul>
+
       <h2>Installation</h2>
+      <h3>Depuis les sources</h3>
       <pre><code>git clone https://github.com/noobosaurus-r3x/Navarro.git
 cd Navarro
 pip install -r requirements.txt</code></pre>
       
-      <h2>Usage</h2>
-      <pre><code>python navarro.py &lt;username&gt;</code></pre>
+      <h3>Docker</h3>
+      <pre><code>docker build -t navarro .
+docker run -it navarro &lt;username&gt;</code></pre>
       
-      <h2>Fonctionnalités</h2>
+      <h2>Usage</h2>
+      <h3>Recherche simple</h3>
+      <pre><code>python3 navarro.py johndoe</code></pre>
+      
+      <h3>Recherche par lot</h3>
+      <pre><code># usernames.txt contient un username par ligne
+python3 navarro.py --list usernames.txt</code></pre>
+      
+      <h3>Export JSON</h3>
+      <pre><code>python3 navarro.py johndoe --export results.json</code></pre>
+      
+      <h3>Combiné</h3>
+      <pre><code>python3 navarro.py --list targets.txt --export output.json</code></pre>
+
+      <h2>Exemple de sortie</h2>
+      <pre><code class="language-bash">$ python3 navarro.py h4ck3r_2024
+
+ ███╗   ██╗ █████╗ ██╗   ██╗ █████╗ ██████╗ ██████╗  ██████╗ 
+ ████╗  ██║██╔══██╗██║   ██║██╔══██╗██╔══██╗██╔══██╗██╔═══██╗
+ ██╔██╗ ██║███████║██║   ██║███████║██████╔╝██████╔╝██║   ██║
+ ██║╚██╗██║██╔══██║╚██╗ ██╔╝██╔══██║██╔══██╗██╔══██╗██║   ██║
+ ██║ ╚████║██║  ██║ ╚████╔╝ ██║  ██║██║  ██║██║  ██║╚██████╔╝
+
+[*] Checking username: h4ck3r_2024
+
+[+] GitHub       : https://github.com/h4ck3r_2024
+[+] Reddit       : https://reddit.com/user/h4ck3r_2024
+[-] Instagram    : Not found
+[-] TikTok       : Not found
+[+] Pastebin     : https://pastebin.com/u/h4ck3r_2024
+[-] LinkedIn     : Not found
+[+] Telegram     : https://t.me/h4ck3r_2024
+
+[*] Found on 4/20 platforms</code></pre>
+
+      <h2>Plateformes supportées</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2 not-prose my-4">
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)]">GitHub</span>
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)]">GitLab</span>
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)]">Reddit</span>
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)]">Instagram</span>
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)]">TikTok</span>
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)]">LinkedIn</span>
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)]">Pinterest</span>
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)]">Telegram</span>
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)]">Facebook</span>
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)]">Pastebin</span>
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)]">Medium</span>
+        <span class="text-xs font-mono px-2 py-1 rounded bg-[var(--color-bg-alt)]">+ 10 autres</span>
+      </div>
+
+      <h2>Cas d'usage</h2>
+      <h3>Bug Bounty</h3>
+      <p>
+        Identifier les comptes personnels des employés d'une entreprise target. Un dev qui utilise le même 
+        pseudo partout peut leak des infos sensibles sur des plateformes moins surveillées (Pastebin, forums).
+      </p>
+      
+      <h3>OSINT / Investigation</h3>
+      <p>
+        Mapper la présence en ligne d'une personne. Croiser avec d'autres outils pour construire un profil 
+        complet : email associé, autres pseudos, historique de posts.
+      </p>
+      
+      <h3>Threat Intel</h3>
+      <p>
+        Suivre un acteur malveillant qui réutilise un pseudo. Identifier ses comptes sur différentes 
+        plateformes pour mieux comprendre son mode opératoire.
+      </p>
+
+      <h2>Limitations</h2>
       <ul>
-        <li>Vérification multi-plateformes</li>
-        <li>Résultats rapides et clairs</li>
-        <li>Export des résultats</li>
+        <li>Certaines plateformes changent régulièrement leurs endpoints (Instagram notamment)</li>
+        <li>Les comptes privés peuvent générer des faux négatifs</li>
+        <li>Rate limiting peut nécessiter des pauses entre les runs</li>
       </ul>
     </div>
     
