@@ -45,7 +45,8 @@ export const sheets: Sheet[] = [
   { title: "Uncover", slug: "uncover", category: "OSINT", description: "Recherche Shodan/Censys/etc depuis le terminal." },
   { title: "Wafw00f", slug: "wafw00f", category: "Recon", description: "Détection de WAF." },
   { title: "WhatWeb", slug: "whatweb", category: "Recon", description: "Fingerprinting de technologies web." },
-  { title: "XSStrike", slug: "xsstrike", category: "Web", description: "Scanner XSS avancé." }
+  { title: "XSStrike", slug: "xsstrike", category: "Web", description: "Scanner XSS avancé." },
+  { title: "Caido", slug: "caido", category: "Web", description: "Proxy web moderne pour pentest : replay, fuzzer, workflows, plugins IA." }
 ];
 
 export const categories = [...new Set(sheets.map(s => s.category).filter(Boolean))].sort();
