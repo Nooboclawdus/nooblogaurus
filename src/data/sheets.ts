@@ -46,7 +46,8 @@ export const sheets: Sheet[] = [
   { title: "Wafw00f", slug: "wafw00f", category: "Recon", description: "Détection de WAF." },
   { title: "WhatWeb", slug: "whatweb", category: "Recon", description: "Fingerprinting de technologies web." },
   { title: "XSStrike", slug: "xsstrike", category: "Web", description: "Scanner XSS avancé." },
-  { title: "Caido", slug: "caido", category: "Web", description: "Proxy web moderne pour pentest : replay, fuzzer, workflows, plugins IA." }
+  { title: "Caido", slug: "caido", category: "Web", description: "Proxy web moderne pour pentest : replay, fuzzer, workflows, plugins IA." },
+  { title: "gau", slug: "gau", category: "Recon", description: "Get All URLs — récupère les URLs depuis Wayback, Common Crawl, OTX, URLScan." }
 ];
 
 export const categories = [...new Set(sheets.map(s => s.category).filter(Boolean))].sort();
