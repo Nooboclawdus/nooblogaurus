@@ -17,6 +17,9 @@ const {
 
 const siteTitle = "Nooblogaurus";
 const fullTitle = title === "Home" ? siteTitle : `${title} | ${siteTitle}`;
+
+// Canonical URL - prevents duplicate content issues
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://nooblogaurus.online');
 ---
 
 <!doctype html>
@@ -26,31 +29,44 @@ const fullTitle = title === "Home" ? siteTitle : `${title} | ${siteTitle}`;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     
+    <!-- Canonical URL -->
+    <link rel="canonical" href={canonicalURL} />
+    
     <!-- Open Graph -->
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={image} />
+    <meta property="og:image" content={new URL(image, Astro.site || 'https://nooblogaurus.online')} />
+    <meta property="og:url" content={canonicalURL} />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={siteTitle} />
     
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@NoobosaurusR3x" />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={image} />
+    <meta name="twitter:image" content={new URL(image, Astro.site || 'https://nooblogaurus.online')} />
     
     <link rel="icon" type="image/png" href="/favicon.png" />
     
-    <!-- Fonts -->
+    <!-- Fonts - Preload for better performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" as="style">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     
     <title>{fullTitle}</title>
   </head>
   <body class="flex flex-col min-h-screen">
+    <!-- Skip link for keyboard navigation -->
+    <a 
+      href="#main-content" 
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-[var(--color-accent)] focus:text-black focus:px-4 focus:py-2 focus:rounded"
+    >
+      Aller au contenu principal
+    </a>
     <Nav />
-    <main class="flex-1 w-full max-w-6xl mx-auto px-4 py-8">
+    <main id="main-content" class="flex-1 w-full max-w-6xl mx-auto px-4 py-8">
       <slot />
     </main>
     <Footer />
