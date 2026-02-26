@@ -201,7 +201,7 @@ Cette fonction est marquée `'use server'`, donc elle s'exécute côté serveur.
 
 Le dev voit une fonction. Toi tu vois un endpoint HTTP non protégé.
 
-Pour tester, intercepte les requêtes quand tu déclenches l'action depuis le frontend. Tu verras des POST vers des URLs style `/_next/actions/...` avec des payloads JSON. Modifie les IDs dans le payload et regarde ce qui se passe.
+Pour tester, intercepte les requêtes quand tu déclenches l'action depuis le frontend. Tu verras des POST vers l'URL de la page courante avec un header `Next-Action: <hash-de-la-fonction>` et les arguments en JSON dans le body. Modifie les IDs dans le payload et regarde ce qui se passe.
 
 ---
 

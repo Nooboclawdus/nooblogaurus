@@ -1195,7 +1195,7 @@ export default function PostPage({ params }) {
 }
 ```
 
-Le dev pense peut-être "c'est une fonction serveur, c'est sécurisé". Mais c'est exactement comme un endpoint HTTP. Next.js expose cette fonction via une route comme `/_next/...` ou avec un payload spécial.
+Le dev pense peut-être "c'est une fonction serveur, c'est sécurisé". Mais c'est exactement comme un endpoint HTTP. Next.js expose cette fonction via un POST sur l'URL de la page courante avec un header `Next-Action` contenant le hash de la fonction.
 
 **Pourquoi c'est vulnérable**
 
@@ -1207,7 +1207,7 @@ Le dev pense peut-être "c'est une fonction serveur, c'est sécurisé". Mais c'e
 
 **Comment tester**
 
-1. **Identifie les Server Actions** : cherche `'use server'` dans le code (si open source) ou les requêtes vers `/_next/` avec des payloads inhabituels.
+1. **Identifie les Server Actions** : cherche `'use server'` dans le code (si open source) ou les requêtes POST avec un header `Next-Action` dans ton proxy.
 
 2. **Intercepte l'appel** : utilise ton proxy pour capturer la requête quand tu utilises légitimement la fonctionnalité.
 
