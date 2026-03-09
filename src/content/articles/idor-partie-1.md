@@ -72,7 +72,7 @@ Le compte B c'est l'attaquant. Deuxième compte, créé avec un email différent
 
 C'est là que la plupart des gens se plantent. Tu te retrouves avec 15 onglets ouverts, tu sais plus quel compte est connecté où, et tu perds 20 minutes à debug un "problème" qui était juste une confusion de session.
 
-![Where session?](/public/images/comptesAB.png)
+![Where session?](/images/comptesAB.png)
 
 La solution qui marche c'est d'avoir une séparation physique impossible à confondre. Deux navigateurs différents (pas juste deux fenêtres) — Firefox pour A, Chrome pour B par exemple. Ou deux profils de navigateur — Chrome a une gestion de profils native, chaque profil a ses propres cookies. Ou un navigateur plus la navigation privée, mais attention, la nav privée partage parfois des trucs avec la session normale.
 
