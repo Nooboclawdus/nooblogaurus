@@ -62,6 +62,8 @@ if (doc.ownerId !== currentUser.id) {
 
 Et le backend retourne le document sans vérifier parce que "le frontend gère". Sauf que n'importe qui peut appeler l'API directement avec curl et le check frontend, il s'en tape.
 
+![Frontend_gère](/public/images/frontend_gere.png)
+
 J'ai vu ça sur des apps en prod avec des millions d'utilisateurs. L'équipe frontend ajoute un check "pour l'UX", l'équipe backend suppose que c'est suffisant, personne se parle. Résultat : IDOR.
 
 ### Le middleware qui vérifie l'auth mais pas l'authz
