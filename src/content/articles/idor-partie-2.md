@@ -119,7 +119,7 @@ Tu as reporté le symptôme, pas l'impact maximal. En t'arrêtant à la premièr
 
 <!-- DIAGRAM:impact -->
 
-Pas toutes les IDOR se valent. La lecture de données peu sensibles comme le username ou l'avatar c'est faible. La lecture de données sensibles comme l'email ou le téléphone c'est un peu mieux. La lecture de données critiques comme des documents privés ou des credentials c'est déjà sérieux. La modification de données c'est encore mieux. La modification des permissions ou des rôles c'est critique. L'account takeover complet c'est le jackpot.
+Toutes les IDOR ne se valent pas. La lecture de données peu sensibles comme le username ou l'avatar c'est faible. La lecture de données sensibles comme l'email ou le téléphone c'est un peu mieux. La lecture de données critiques comme des documents privés ou des credentials c'est déjà sérieux. La modification de données c'est encore mieux. La modification des permissions ou des rôles c'est critique. L'account takeover complet c'est le jackpot.
 
 Avant de reporter, explore l'escalade. Si tu peux lire avec GET, l'endpoint PUT est-il accessible ? Tu as accès aux données d'un user lambda, peux-tu accéder aux données d'un admin ? Cherche des IDs de comptes admin qui sont souvent les premiers créés (1, 2, 3) ou des endpoints spécifiques comme `/api/admin/users`. Tu vois des données, peux-tu les utiliser pour autre chose ? Si tu leaks un reset token, tu peux prendre le contrôle du compte.
 
