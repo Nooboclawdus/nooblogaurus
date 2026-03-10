@@ -46,7 +46,7 @@ Ta-da. Comme le mot qu'un magicien dit après son tour. Sauf que le tour c'est t
 Le concept est simple à en être suspect :
 
 1. À la fin de ta journée (ou pendant, ou le lendemain matin), tu notes tout ce que t'as fait
-2. Pas juste les trucs "importants" — tout. Le mail chiant que t'as enfin envoyé. Le script que t'as debuggé. Le café que t'as préparé au lieu de commander un Uber Eats. Le fait que t'as ouvert ton IDE.
+2. Pas juste les trucs "importants", tout. Le mail chiant que t'as enfin envoyé. Le script que t'as debuggé. Le café que t'as préparé au lieu de commander un Uber Eats. Le fait que t'as ouvert ton IDE.
 3. Tu relis ta liste
 4. Tu réalises que t'as fait beaucoup plus que ce que tu croyais
 
@@ -81,7 +81,7 @@ L'effet Zeigarnik te fait ruminer sur l'inachevé. La ta-da list contrebalance e
 Pas besoin de compliquer. Voilà un mardi soir random :
 
 ```
-## Ta-da — Mardi 10 mars
+## Ta-da - Mardi 10 mars
 
 - Fixé le bug de race condition sur le mixed_precision
 - Répondu au triager YWH sur MRS-001 avec les preuves Caido
