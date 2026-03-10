@@ -3,7 +3,7 @@
 *Pourquoi noter ce que t'as fait marche mieux que noter ce que t'as pas fait.*
 
 > [!TIP]
-> Cet article n'est pas un thread LinkedIn recyclé sur la "productivité positive". C'est un truc qui marche, avec la science derrière, et pourquoi t'en as probablement besoin sans le savoir.
+> Cet article n'est pas un thread LinkedIn recyclé sur la "productivité positive". C'est un truc qui marche, avec la science derrière.
 
 ---
 
