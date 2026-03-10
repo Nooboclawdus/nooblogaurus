@@ -13,6 +13,8 @@ Ce blog parle normalement de sécu, de bug bounty, de trucs techniques. Un artic
 
 Parce que le burnout dans la sécu, c'est pas un mythe. On passe nos journées à chercher ce qui va pas, à traquer des vulns, à lire du code en cherchant la faille. C'est un métier où tu passes 8 heures à échouer pour peut-être réussir 10 minutes. Ta to-do list dit "trouver une IDOR sur la cible X" et à la fin de la journée t'en as pas trouvé. Journée perdue ? Non. T'as cartographié l'app, compris l'architecture, éliminé des pistes, appris des trucs. Mais ta to-do list dit que t'as rien fait.
 
+![burnout](/images/burnout.png)
+
 Si t'es comme moi, ta journée commence par une liste de trucs à faire. Et ta journée se termine en regardant cette même liste avec 60% des items pas cochés, en te disant que t'as rien foutu. Alors que t'as bossé 10 heures.
 
 Le problème c'est pas toi. C'est la liste.
@@ -102,6 +104,8 @@ C'est la partie importante. On met sur nos to-do lists les "vrais" trucs — le 
 
 Comme le dit Allison Chawla (LCSW, PhD) : "On oublie trop facilement à quel point même les tâches les plus fines sont importantes, et combien elles demandent notre énergie et notre temps." Tu t'es brossé les dents, t'as nourri ton chat, t'as mis un pantalon, t'as lancé le lave-vaisselle avant de bosser. Ça compte.
 
+![0tache](/images/0tache.png)
+
 ---
 
 ## Comment s'y mettre
@@ -127,6 +131,8 @@ Y'a pas de mauvaise cadence. Y'a juste la tienne.
 ### Ce qu'on met PAS dessus
 
 C'est pas un outil de performance. Si tu commences à mettre "seulement 3 items aujourd'hui, nul" dans ta ta-da list, t'as raté le point. Pas de jugement. Pas de comparaison avec hier. Pas de "j'aurais dû faire plus". La ta-da list est un miroir bienveillant, pas un manager toxique supplémentaire.
+
+![pleine](/images/pleine.png)
 
 ---
 
