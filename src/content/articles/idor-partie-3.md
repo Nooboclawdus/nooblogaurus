@@ -4,9 +4,9 @@
 
 > [!TIP]
 > **Cet article est en 3 parties :**
-> - [Partie 1](/articles/idor-partie-1) — La méthode qui marche
-> - [Partie 2](/articles/idor-partie-2) — Les conneries à éviter
-> - **Partie 3** (tu es ici) — Les trucs que presque personne explique
+> - [Partie 1](/articles/idor-partie-1) - La méthode qui marche
+> - [Partie 2](/articles/idor-partie-2) - Les conneries à éviter
+> - **Partie 3** (tu es ici) - Les trucs que presque personne explique
 
 ---
 
