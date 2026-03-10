@@ -33,6 +33,8 @@ Y'a un nom pour ça. L'**effet Zeigarnik**. Dans les années 1920, la psychologu
 
 Ta to-do list exploite ce biais. Elle te montre en permanence l'écart entre où t'en es et où tu devrais être. Résultat : t'as bossé comme un malade, t'as sorti du code propre, répondu à 30 messages, résolu un bug vicieux, et le soir tu regardes ta liste et tu te dis "j'ai rien fait". Parce que les trois items que t'avais écrits le matin, tu les as pas touchés. Le reste comptait pas vu que c'était pas sur la liste.
 
+![0tache](/images/0tache.png)
+
 ---
 
 ## C'est quoi une ta-da list
@@ -103,8 +105,6 @@ C'est la partie importante. On met sur nos to-do lists les "vrais" trucs — le 
 - Les micro-décisions qu'on prend toute la journée
 
 Comme le dit Allison Chawla (LCSW, PhD) : "On oublie trop facilement à quel point même les tâches les plus fines sont importantes, et combien elles demandent notre énergie et notre temps." Tu t'es brossé les dents, t'as nourri ton chat, t'as mis un pantalon, t'as lancé le lave-vaisselle avant de bosser. Ça compte.
-
-![0tache](/images/0tache.png)
 
 ---
 
