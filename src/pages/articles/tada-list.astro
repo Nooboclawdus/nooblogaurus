@@ -159,11 +159,11 @@ const htmlContent = marked.parse(mdContent);
     display: none;
   }
 
-  @media (min-width: 1280px) {
+  @media (min-width: 1536px) {
     .toc-sidebar {
       display: block;
       position: fixed;
-      left: 1rem;
+      left: max(1rem, calc((100vw - 72rem) / 2 - 270px));
       top: 6rem;
       width: 220px;
       max-height: calc(100vh - 8rem);
@@ -175,9 +175,9 @@ const htmlContent = marked.parse(mdContent);
     }
   }
 
-  @media (min-width: 1536px) {
+  @media (min-width: 1800px) {
     .toc-sidebar {
-      left: 2rem;
+      left: calc((100vw - 72rem) / 2 - 280px);
       width: 250px;
     }
   }
