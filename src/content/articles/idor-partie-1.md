@@ -98,7 +98,7 @@ Mon setup préféré c'est [PwnFox](https://github.com/yeswehack/PwnFox), l'exte
 
 **Alternative sans extension :** deux navigateurs (Firefox + Chrome) avec un User-Agent custom sur chacun. Dans Chrome, tu mets un UA modifié via les DevTools ou un profil, genre `Mozilla/5.0 (ATTACKER)`. Ensuite dans ton proxy, une règle de highlight ou un filtre sur le User-Agent et t'as ta séparation visuelle sans installer quoi que ce soit. Ça marche aussi bien que PwnFox pour le cas 2-comptes basique.
 
-Ton proxy (Caido, Burp, peu importe) intercepte le trafic des deux navigateurs. Configure-le pour distinguer les deux avec des tags ou des couleurs si ton proxy le permet, ou simplement fais tes actions avec B d'abord, note les requêtes, puis passe à A.
+Ton proxy (Caido, Burp, ou ZAP si t'es encore sous Windows XP) intercepte le trafic des deux navigateurs. Configure-le pour distinguer les deux avec des tags ou des couleurs si ton proxy le permet, ou simplement fais tes actions avec B d'abord, note les requêtes, puis passe à A.
 
 ### Le workflow
 
