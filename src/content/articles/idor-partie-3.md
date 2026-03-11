@@ -233,6 +233,12 @@ L'équipe L&H Security a publié [sandwich](https://github.com/Lupin-Holmes/sand
 
 Évidemment, ça marche que si c'est vraiment des UUID v1, s'ils sont générés sur la même machine, si l'intervalle est petit, s'il y a pas de rate limiting agressif, et si le programme autorise ce type de test. En bug bounty, tu vas rarement bruteforcer en prod — l'objectif c'est surtout de prouver que les UUIDs sont v1 et que l'intervalle est exploitable. Ça suffit souvent pour un rapport.
 
+### UUID v1 cross-tenant : le cas qu'on oublie
+
+Un truc que presque personne mentionne : si deux tenants (organisations) différents utilisent la même infra et génèrent des UUIDs v1, les ressources créées à des moments proches auront des UUIDs proches. Même logique avec des IDs incrémentaux sur un backend partagé — user 4201 dans l'org A et user 4202 dans l'org B, créés à quelques secondes d'intervalle.
+
+Ça veut dire que si tu connais ton propre UUID de ressource (dans ton org), tu peux estimer les UUIDs des ressources créées "autour" dans d'autres orgs. L'attaque sandwich marche aussi en cross-tenant. Et là, l'impact passe de "IDOR dans mon org" à "IDOR cross-tenant" — autrement dit, de High à Critical.
+
 ---
 
 ## Multi-tenant : l'isolation fantôme
