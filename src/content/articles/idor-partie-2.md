@@ -21,7 +21,7 @@ Autorize c'est le plugin officiel de Caido pour automatiser les tests d'autorisa
 
 ### Configuration
 
-Dans Caido, installe Autorize depuis l'interface des plugins, onglet Official. Ensuite connecte-toi avec ton compte low-privilege (l'équivalent du compte B) et récupère le token ou cookie de session dans ton proxy. Si l'app utilise un header `Authorization: Bearer xxx`, copie la valeur xxx. Si c'est un cookie de session, copie la valeur du cookie.
+Dans Caido, installe Autorize depuis l'interface des plugins, onglet Official. Ensuite connecte-toi avec ton compte low-privilege (l'équivalent du compte A, l'attaquant) et récupère le token ou cookie de session dans ton proxy. Si l'app utilise un header `Authorization: Bearer xxx`, copie la valeur xxx. Si c'est un cookie de session, copie la valeur du cookie.
 
 Dans l'interface Autorize, va dans Configuration puis Mutations puis Mutated. Ajoute une mutation de type "Header: Set" avec le header name `Authorization` et la value `Bearer [ton token low-priv]`. Si l'app utilise des cookies plutôt qu'un header Authorization, utilise une mutation "Cookie: Set" à la place. Ce que ça fait : chaque requête sera rejouée avec ce token à la place du token original.
 
@@ -80,9 +80,11 @@ Utilise la fonction Search de ton proxy pour chercher où ton user_id apparaît 
 
 ## S'arrêter au premier 403
 
-Tu testes un endpoint, tu reçois un 403 Forbidden, tu te dis "c'est protégé, next". Erreur.
+Tu testes un endpoint, tu reçois un 403 Forbidden, tu te dis "c'est protégé, next". Erreur. Et ce, pour deux raisons.
 
-Les développeurs implémentent souvent l'access control de manière incohérente. Le dev se dit "je dois protéger l'accès aux profils utilisateurs", il ajoute un check sur `GET /api/users/:id`, mission accomplie, il passe à autre chose. Mais l'app a aussi `PUT /api/users/:id` pour modifier, `DELETE /api/users/:id` pour supprimer, `PATCH /api/users/:id` pour mise à jour partielle. Et ces endpoints ? Pas de check. Parce que "si on peut pas lire, pourquoi on pourrait modifier ?" Sauf que c'est pas comme ça que HTTP fonctionne.
+**Raison 1 : les autres verbes ne sont pas forcément protégés.** Les développeurs implémentent souvent l'access control de manière incohérente. Le dev se dit "je dois protéger l'accès aux profils utilisateurs", il ajoute un check sur `GET /api/users/:id`, mission accomplie, il passe à autre chose. Mais l'app a aussi `PUT /api/users/:id` pour modifier, `DELETE /api/users/:id` pour supprimer, `PATCH /api/users/:id` pour mise à jour partielle. Et ces endpoints ? Pas de check. Parce que "si on peut pas lire, pourquoi on pourrait modifier ?" Sauf que c'est pas comme ça que HTTP fonctionne.
+
+**Raison 2 : un 403 ne garantit pas que rien ne s'est passé.** Certains backends exécutent l'action AVANT de vérifier l'autorisation, ou dans un ordre incohérent. Tu reçois 403, tu penses "c'est bloqué", mais la ressource a été supprimée côté serveur. C'est rare, mais ça arrive — surtout sur du code legacy, des middlewares mal chaînés, ou des architectures microservices où l'authz est dans un service séparé qui répond après l'exécution. Quand tu testes un endpoint destructif, vérifie TOUJOURS l'état de la ressource après coup, même si t'as reçu un 403.
 
 D'abord tu identifies les endpoints sur TES propres ressources. Tu fais un DELETE sur ton propre document, tu vois que ça retourne 200 OK. Ensuite tu testes l'accès sur une ressource d'un autre user, le GET retourne 403 Forbidden. Maintenant tu veux vérifier si DELETE bypass le contrôle, sans transformer un test en suppression réelle.
 
