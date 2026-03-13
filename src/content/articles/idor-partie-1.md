@@ -35,14 +35,6 @@ Ce qu'on fait : lire des données qui ne nous appartiennent pas (avec parcimonie
 
 Pour les actions destructives comme DELETE ou certains PUT, la méthode safe c'est de tester d'abord sur TES PROPRES ressources pour identifier l'endpoint et son comportement. Ensuite, tu vérifies que le contrôle d'accès ne bloque pas quand tu cibles une ressource d'un autre user, mais tu évites l'effet destructif.
 
-Un `200 OK` sur un DELETE n'est pas automatiquement une preuve safe, parce qu'un 200 peut déjà vouloir dire "c'est supprimé". Ce que tu veux prouver, c'est que la requête a passé l'autorisation et a atteint la logique métier, sans avoir besoin de casser les données.
-
-Attention, un `403 Forbidden` ne veut pas toujours dire "rien ne s'est passé". Certaines implémentations vérifient l'autorisation APRÈS avoir exécuté l'action, ou exécutent partiellement avant de bloquer. Un endpoint peut te renvoyer 403 et quand même avoir supprimé la ressource côté serveur — c'est rare mais ça existe, surtout sur du code legacy ou des middlewares mal ordonnés. N'assume jamais qu'un 403 = safe sans vérifier l'état de la ressource après coup.
-
-Et les suppressions ne passent pas toujours par un `DELETE`. Un `GET /api/documents/123?action=delete` ou `POST /api/documents/remove` avec un ID dans le body, c'est courant. Certaines apps utilisent des query params comme `?delete=true`, des actions dans le body JSON, ou même des webhooks internes. Mappe tous les endpoints qui modifient l'état, pas juste ceux qui utilisent les verbes HTTP "évidents".
-
-Ce que tu cherches idéalement : un comportement qui échoue APRÈS la phase d'autorisation — une erreur de précondition, de validation, de payload invalide. Si tu obtiens un 412 ou un 400 au lieu d'un 403, c'est un signal fort que l'endpoint est atteignable sans contrôle d'accès.
-
 Beaucoup de programmes demandent explicitement de ne pas supprimer ou modifier les données d'autres utilisateurs. Lis les règles du programme avant de tester.
 
 ---
