@@ -86,13 +86,23 @@ Tu testes un endpoint, tu reçois un 403 Forbidden, tu te dis "c'est protégé, 
 
 **Raison 2 : un 403 ne garantit pas que rien ne s'est passé.** Certains backends exécutent l'action AVANT de vérifier l'autorisation, ou dans un ordre incohérent. Tu reçois 403, tu penses "c'est bloqué", mais la ressource a été supprimée côté serveur. C'est rare, mais ça arrive — surtout sur du code legacy, des middlewares mal chaînés, ou des architectures microservices où l'authz est dans un service séparé qui répond après l'exécution. Quand tu testes un endpoint destructif, vérifie TOUJOURS l'état de la ressource après coup, même si t'as reçu un 403.
 
-D'abord tu identifies les endpoints sur TES propres ressources. Tu fais un DELETE sur ton propre document, tu vois que ça retourne 200 OK. Ensuite tu testes l'accès sur une ressource d'un autre user, le GET retourne 403 Forbidden. Maintenant tu veux vérifier si DELETE bypass le contrôle, sans transformer un test en suppression réelle.
-
-L'idée c'est pas d'avoir un 200, c'est de montrer que ça ne bloque pas côté autorisation. Tu peux faire échouer la requête après l'authz en utilisant une précondition `If-Match` qui provoque un 412, ou une validation qui provoque un 400. Si tu obtiens ce genre de réponse au lieu d'un 403, t'as un argument fort que l'endpoint est atteignable sans blocage d'accès. Tu peux aussi montrer l'incohérence par pattern — GET bloqué mais DELETE non bloqué sur TES ressources, routes CRUD asymétriques — puis demander au triage si un test destructif contrôlé est autorisé.
+### Quoi tester
 
 Pour chaque endpoint protégé, vérifie l'accessibilité des différents verbes HTTP. GET pour la lecture c'est un test direct et safe. POST, PUT, PATCH tu testes d'abord sur tes ressources. DELETE tu testes sur TES ressources uniquement, puis tu prouves l'absence de check d'accès sans déclencher l'effet. HEAD peut révéler des différences de traitement. OPTIONS peut leaker des infos sur les méthodes supportées.
 
+Et les suppressions ne passent pas toujours par un `DELETE`. Un `GET /api/documents/123?action=delete` ou `POST /api/documents/remove` avec un ID dans le body, c'est courant. Certaines apps utilisent des query params comme `?delete=true`, des actions dans le body JSON, ou même des webhooks internes. Mappe tous les endpoints qui modifient l'état, pas juste ceux qui utilisent les verbes HTTP "évidents".
+
 Y'a aussi les headers de method override qui peuvent bypass des protections. `X-HTTP-Method-Override: DELETE` sur un POST, certains frameworks comme Spring interprètent ce header et transforment le POST en DELETE côté serveur. Si le WAF ou le middleware d'auth ne check que la méthode HTTP apparente, le DELETE passe.
+
+### Comment tester sans casser
+
+D'abord tu identifies les endpoints sur TES propres ressources. Tu fais un DELETE sur ton propre document, tu vois que ça retourne 200 OK. Ensuite tu testes l'accès sur une ressource d'un autre user, le GET retourne 403 Forbidden. Maintenant tu veux vérifier si DELETE bypass le contrôle, sans transformer un test en suppression réelle.
+
+L'idée c'est pas d'avoir un 200, c'est de montrer que ça ne bloque pas côté autorisation. Tu peux faire échouer la requête après l'authz en utilisant une précondition `If-Match` qui provoque un 412, ou une validation qui provoque un 400. Tu peux aussi montrer l'incohérence par pattern (GET bloqué mais DELETE non bloqué sur TES ressources, routes CRUD asymétriques) puis demander au triage si un test destructif contrôlé est autorisé.
+
+Un `200 OK` sur un DELETE n'est pas automatiquement une preuve safe, parce qu'un 200 peut déjà vouloir dire "c'est supprimé". Ce que tu veux prouver, c'est que la requête a passé l'autorisation et a atteint la logique métier, sans avoir besoin de casser les données.
+
+Ce que tu cherches idéalement : un comportement qui échoue APRÈS la phase d'autorisation — une erreur de précondition, de validation, de payload invalide. Si tu obtiens un 412 ou un 400 au lieu d'un 403, c'est un signal fort que l'endpoint est atteignable sans contrôle d'accès.
 
 ---
 
