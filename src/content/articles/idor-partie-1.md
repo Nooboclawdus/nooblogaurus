@@ -26,16 +26,24 @@ Ce qu'on va couvrir : la méthode qui marche, les erreurs qui te font perdre du 
 
 ## Les règles du jeu
 
-Avant d'aller plus loin, une mise au point importante. En bug bounty, tu testes des applications en production avec de vraies données utilisateurs. Y'a des limites à ne pas franchir.
+Avant d'aller plus loin, une mise au point. En bug bounty, tu testes des applications en production avec de vraies données utilisateurs. Y'a des limites à ne pas franchir, et les ignorer c'est le meilleur moyen de se faire ban d'un programme.
 
-Ce qu'on fait : lire des données qui ne nous appartiennent pas (avec parcimonie, juste pour prouver la vuln), modifier ses propres ressources pour comprendre les endpoints, vérifier qu'un endpoint destructif est atteignable sans faire de dégâts.
+**Ce qu'on fait :** lire des données qui ne nous appartiennent pas (avec parcimonie, juste pour prouver la vuln), modifier ses propres ressources pour comprendre les endpoints, vérifier qu'un endpoint destructif est atteignable sans faire de dégâts.
 
 > [!WARNING]
-> Ce qu'on ne fait PAS : supprimer les ressources d'autres utilisateurs, modifier leurs données (sauf cas très spécifiques et réversibles), énumérer massivement des données sensibles, exfiltrer des données au-delà de ce qui est nécessaire pour la preuve.
+> **Ce qu'on ne fait PAS :** supprimer les ressources d'autres utilisateurs, modifier leurs données (sauf cas très spécifiques et réversibles), énumérer massivement des données sensibles, exfiltrer des données au-delà de ce qui est nécessaire pour la preuve.
 
-Pour les actions destructives comme DELETE ou certains PUT, la méthode safe c'est de tester d'abord sur TES PROPRES ressources pour identifier l'endpoint et son comportement. Ensuite, tu vérifies que le contrôle d'accès ne bloque pas quand tu cibles une ressource d'un autre user, mais tu évites l'effet destructif.
+**Lis les règles du programme.** Pas le résumé, les vraies règles ! Certains programmes interdisent explicitement les tests sur les endpoints de paiement, de suppression de compte, ou sur certains sous-domaines. D'autres autorisent uniquement le scope listé, tout le reste est hors-jeu, même si c'est techniquement accessible. Le scope c'est pas une suggestion, c'est un contrat.
 
-Beaucoup de programmes demandent explicitement de ne pas supprimer ou modifier les données d'autres utilisateurs. Lis les règles du programme avant de tester.
+**Crée tes propres comptes de test.** La plupart des tests IDOR nécessitent deux comptes (on y vient juste après). Utilise des comptes que tu as créés toi-même, jamais des comptes d'utilisateurs réels. Certains programmes fournissent des environnements de staging, utilise-les en priorité. Si le programme ne permet pas la création de comptes multiples, demande avant de tester.
+
+**Teste à un rythme humain.** Même un scan "raisonnable" peut déclencher des alertes côté client. Un endpoint toutes les 2-3 secondes, c'est un humain. 50 requêtes par seconde sur `/api/users/{id}`, c'est un scanner, et l'équipe sécu va le voir passer.
+
+**Documente ce que tu fais.** Garde des traces de chaque test : quel endpoint, quand, quelle requête, quelle réponse. C'est ta protection si un triage te demande "pourquoi t'as touché à ça ?". Un historique Caido ou Burp bien filtré, c'est suffisant.
+
+Pour les actions destructives comme DELETE ou certains PUT, la méthode safe c'est de tester d'abord sur TES PROPRES ressources pour identifier l'endpoint et son comportement. Ensuite, tu vérifies que le contrôle d'accès ne bloque pas quand tu cibles une ressource d'un autre user, mais tu évites l'effet destructif. On détaille ça dans la partie 2.
+
+Les programmes ont souvent une clause de safe harbor : tant que tu restes dans les règles, tu es protégé légalement. Mais cette protection saute dès que tu dépasses le scope ou que tu exfiltres des données au-delà du nécessaire. C'est pas un détail juridique abstrait, c'est ce qui fait la différence entre un rapport accepté et un mail d'avocat.
 
 ---
 
