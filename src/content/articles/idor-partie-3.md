@@ -1,6 +1,6 @@
 # IDOR : Les trucs que presque personne explique
 
-*GraphQL, WebSockets, UUIDs — les trucs que 90% des articles IDOR ignorent.*
+*GraphQL, WebSockets, UUIDs : les trucs que 90% des articles IDOR ignorent.*
 
 > [!TIP]
 > **Cet article est en 3 parties :**
@@ -100,7 +100,7 @@ Le dev a sécurisé `me`. Il a oublié que `user(id)` existe aussi dans le sché
 
 ### Ce que tu fais
 
-Tu commences par l'introspection. Si elle est activée (souvent le cas en dev, parfois oubliée en prod), tu peux voir le schéma complet avec une simple query `__schema`. Ça te montre toutes les queries disponibles, tous les types, tous les champs. Cherche les queries avec des arguments `id`, `userId`, `documentId` — c'est là que les IDOR se cachent.
+Tu commences par l'introspection. Si elle est activée (souvent le cas en dev, parfois oubliée en prod), tu peux voir le schéma complet avec une simple query `__schema`. Ça te montre toutes les queries disponibles, tous les types, tous les champs. Cherche les queries avec des arguments `id`, `userId`, `documentId`, c'est là que les IDOR se cachent.
 
 ```graphql
 {
@@ -122,7 +122,7 @@ Tu peux aussi faire de l'over-fetching : même quand t'accèdes légitimement à
 
 GraphQL permet aussi de traverser les relations avec des nested queries. Si tu peux accéder à un post, tu peux peut-être accéder aux commentaires de ce post, puis aux auteurs de ces commentaires, puis aux messages privés de ces auteurs. C'est IDOR par traversée.
 
-Et oublie pas les mutations. Les queries c'est la lecture, les mutations c'est l'écriture. `updateUser(id: "456", input: { role: "admin" })` — même logique, mêmes problèmes.
+Et oublie pas les mutations. Les queries c'est la lecture, les mutations c'est l'écriture. `updateUser(id: "456", input: { role: "admin" })`, même logique, mêmes problèmes.
 
 Côté outils, GraphQL Voyager te permet de visualiser le schéma en graphe, InQL (extension Burp) fait du scan automatique, et graphql-cop détecte les misconfigs.
 
@@ -179,7 +179,7 @@ wss.on('connection', (ws, req) => {
 
 ### Comment tu testes
 
-Intercepte le trafic WebSocket avec Caido ou Burp — ils le font très bien maintenant. Cherche les messages avec des IDs dedans. Change les IDs. Observe ce qui revient.
+Intercepte le trafic WebSocket avec Caido ou Burp,ils le font très bien maintenant. Cherche les messages avec des IDs dedans. Change les IDs. Observe ce qui revient.
 
 Une app de chat par exemple : tu envoies `{ type: 'joinRoom', roomId: 'room-123' }` pour rejoindre ta room, puis tu essaies avec `room-456` qui est la room privée de quelqu'un d'autre. Si ça marche, tu reçois tous leurs messages. Boom.
 
@@ -187,7 +187,7 @@ Une app de chat par exemple : tu envoies `{ type: 'joinRoom', roomId: 'room-123'
 
 ## Server Actions : le nouveau piège
 
-Next.js, Remix, et compagnie ont introduit les "Server Actions" — des fonctions qui tournent côté serveur mais qu'on appelle comme des fonctions normales côté client. C'est magique pour le dev. C'est un piège pour la sécurité.
+Next.js, Remix, et compagnie ont introduit les "Server Actions", des fonctions qui tournent côté serveur mais qu'on appelle comme des fonctions normales côté client. C'est magique pour le dev. C'est un piège pour la sécurité.
 
 ```typescript
 // app/actions.ts
@@ -199,7 +199,7 @@ export async function deletePost(postId: string) {
 }
 ```
 
-Cette fonction est marquée `'use server'`, donc elle s'exécute côté serveur. Mais elle est exposée comme un endpoint HTTP sous le capot. Et devine quoi — y'a pas de vérification de propriété.
+Cette fonction est marquée `'use server'`, donc elle s'exécute côté serveur. Mais elle est exposée comme un endpoint HTTP sous le capot. Et devine quoi, y'a pas de vérification de propriété.
 
 Le dev voit une fonction. Toi tu vois un endpoint HTTP non protégé.
 
@@ -225,19 +225,19 @@ Un UUID v1 est construit à partir du timestamp, du clock sequence, et de l'adre
 
 ### Le scénario classique
 
-Tu veux le lien de reset password d'une victime. Tu demandes un reset pour ton compte et tu récupères l'UUID du lien (UUID1). Ensuite tu demandes un reset pour la victime — elle reçoit un lien avec un UUID que tu connais pas. Puis tu demandes un autre reset pour toi et tu récupères UUID2.
+Tu veux le lien de reset password d'une victime. Tu demandes un reset pour ton compte et tu récupères l'UUID du lien (UUID1). Ensuite tu demandes un reset pour la victime, elle reçoit un lien avec un UUID que tu connais pas. Puis tu demandes un autre reset pour toi et tu récupères UUID2.
 
 L'UUID de la victime est sandwiché entre UUID1 et UUID2. Si l'intervalle de temps est petit (quelques secondes), l'espace de recherche devient gérable.
 
 L'équipe L&H Security a publié [sandwich](https://github.com/Lupin-Holmes/sandwich) pour automatiser ça. Tu lui files tes deux UUIDs et il génère tous les UUIDs possibles dans l'intervalle.
 
-Évidemment, ça marche que si c'est vraiment des UUID v1, s'ils sont générés sur la même machine, si l'intervalle est petit, s'il y a pas de rate limiting agressif, et si le programme autorise ce type de test. En bug bounty, tu vas rarement bruteforcer en prod — l'objectif c'est surtout de prouver que les UUIDs sont v1 et que l'intervalle est exploitable. Ça suffit souvent pour un rapport.
+Évidemment, ça marche que si c'est vraiment des UUID v1, s'ils sont générés sur la même machine, si l'intervalle est petit, s'il y a pas de rate limiting agressif, et si le programme autorise ce type de test. En bug bounty, tu vas rarement bruteforcer en prod. L'objectif c'est surtout de prouver que les UUIDs sont v1 et que l'intervalle est exploitable. Ça suffit souvent pour un rapport.
 
 ### UUID v1 cross-tenant : le cas qu'on oublie
 
-Un truc que presque personne mentionne : si deux tenants (organisations) différents utilisent la même infra et génèrent des UUIDs v1, les ressources créées à des moments proches auront des UUIDs proches. Même logique avec des IDs incrémentaux sur un backend partagé — user 4201 dans l'org A et user 4202 dans l'org B, créés à quelques secondes d'intervalle.
+Un truc que presque personne mentionne : si deux tenants (organisations) différents utilisent la même infra et génèrent des UUIDs v1, les ressources créées à des moments proches auront des UUIDs proches. Même logique avec des IDs incrémentaux sur un backend partagé : user 4201 dans l'org A et user 4202 dans l'org B, créés à quelques secondes d'intervalle.
 
-Ça veut dire que si tu connais ton propre UUID de ressource (dans ton org), tu peux estimer les UUIDs des ressources créées "autour" dans d'autres orgs. L'attaque sandwich marche aussi en cross-tenant. Et là, l'impact passe de "IDOR dans mon org" à "IDOR cross-tenant" — autrement dit, de High à Critical.
+Ça veut dire que si tu connais ton propre UUID de ressource (dans ton org), tu peux estimer les UUIDs des ressources créées "autour" dans d'autres orgs. L'attaque sandwich marche aussi en cross-tenant. Et là, l'impact passe de "IDOR dans mon org" à "IDOR cross-tenant". Autrement dit, de High à Critical.
 
 ---
 
@@ -255,9 +255,9 @@ Si ça marche, t'as une IDOR cross-tenant. C'est généralement critique parce q
 
 ### Où chercher
 
-Les endpoints d'admin sont souvent moins bien protégés. `/api/admin/users`, `/api/admin/settings`, `/api/admin/billing` — les devs mettent un check "is_admin" mais oublient de vérifier que l'admin appartient à la bonne org.
+Les endpoints d'admin sont souvent moins bien protégés. `/api/admin/users`, `/api/admin/settings`, `/api/admin/billing`. Les devs mettent un check "is_admin" mais oublient de vérifier que l'admin appartient à la bonne org.
 
-Les fonctionnalités de partage aussi. "Inviter un user dans l'org", "Partager un document avec une autre org" — ces features traversent volontairement les frontières d'isolation, donc les checks sont plus complexes et souvent incomplets.
+Les fonctionnalités de partage aussi. "Inviter un user dans l'org", "Partager un document avec une autre org", ces features traversent volontairement les frontières d'isolation, donc les checks sont plus complexes et souvent incomplets.
 
 ---
 
@@ -265,9 +265,9 @@ Les fonctionnalités de partage aussi. "Inviter un user dans l'org", "Partager u
 
 L'IDOR c'est bien, mais faut savoir quand passer à autre chose.
 
-Continue si les IDs sont séquentiels (`user_id=1, 2, 3...`) parce que l'énumération est triviale et y'a forcément des trucs à trouver. Continue si l'app utilise de l'auth maison (JWT custom, sessions bricolées) parce que le code custom a plus de chances d'avoir des trous que les frameworks matures. Continue si les erreurs sont verbeuses — une app qui te dit "User 123 not found" vs "Access denied to user 456" fait son access control au cas par cas, pas de manière systématique. Continue si c'est une app legacy ou une startup early-stage — les vieilles apps ont de la dette technique, les startups ont sacrifié la sécurité pour la vitesse.
+Continue si les IDs sont séquentiels (`user_id=1, 2, 3...`) parce que l'énumération est triviale et y'a forcément des trucs à trouver. Continue si l'app utilise de l'auth maison (JWT custom, sessions bricolées) parce que le code custom a plus de chances d'avoir des trous que les frameworks matures. Continue si les erreurs sont verbeuses : une app qui te dit "User 123 not found" vs "Access denied to user 456" fait son access control au cas par cas, pas de manière systématique. Continue si c'est une app legacy ou une startup early-stage : les vieilles apps ont de la dette technique, les startups ont sacrifié la sécurité pour la vitesse.
 
-Passe à autre chose si c'est UUID v4 partout sans aucun leak — si tu peux pas deviner les IDs, les chances sont faibles. Passe à autre chose si les réponses sont uniformes — une app qui retourne 404 que la ressource existe ou non a été conçue avec la sécurité en tête. Passe à autre chose si le rate limiting est agressif — tu te fais ban après 10 requêtes, ça va être compliqué. Et passe à autre chose si t'as passé 4h sans rien trouver sur une app moderne avec tous les signaux négatifs — le temps c'est de l'argent.
+Passe à autre chose si c'est UUID v4 partout sans aucun leak. Si tu peux pas deviner les IDs, les chances sont faibles. Passe à autre chose si les réponses sont uniformes : une app qui retourne 404 que la ressource existe ou non a été conçue avec la sécurité en tête. Passe à autre chose si le rate limiting est agressif, tu te fais ban après 10 requêtes, ça va être compliqué. Et passe à autre chose si t'as passé 4h sans rien trouver sur une app moderne avec tous les signaux négatifs. Le temps c'est de l'argent.
 
 ---
 
