@@ -17,7 +17,7 @@ Faire le test 2-comptes manuellement, ça marche. Mais c'est lent. Sur une appli
 Autorize c'est le plugin officiel de Caido pour automatiser les tests d'autorisation. Son principe est simple : pour chaque requête qui passe par ton proxy, il la rejoue automatiquement avec différents niveaux de privilèges et compare les réponses. Concrètement, quand tu navigues avec ton compte high-privilege, Autorize génère en parallèle trois versions de chaque requête. La baseline c'est la requête originale avec ton compte high-priv. La mutated c'est la même requête avec les credentials d'un compte low-priv. La no-auth c'est la même requête sans aucune authentification. En comparant les réponses, il détecte automatiquement les cas où un utilisateur moins privilégié peut accéder aux mêmes ressources.
 
 > [!INFO]
-> Autorize existe aussi pour Burp Suite (extension populaire). La config est similaire — le concept reste le même.
+> Autorize existe aussi pour Burp Suite (extension populaire). La config est similaire, le concept reste le même.
 
 ### Configuration
 
@@ -33,7 +33,7 @@ Clique sur "Enable Passive Scanning" en haut à droite, déconnecte-toi du compt
 
 ### Interpréter les résultats
 
-Dans l'onglet Dashboard d'Autorize, les résultats en rouge ou orange marqués ALLOW indiquent que la requête a réussi avec les credentials low-priv ou sans auth — c'est potentiellement une IDOR. Mais attention, ALLOW ne veut pas automatiquement dire vulnérable. Vérifie que la ressource accédée appartient bien au compte high-priv et pas au low-priv, que les données retournées sont bien sensibles, et que c'est pas un endpoint intentionnellement public.
+Dans l'onglet Dashboard d'Autorize, les résultats en rouge ou orange marqués ALLOW indiquent que la requête a réussi avec les credentials low-priv ou sans auth. C'est potentiellement une IDOR. Mais attention, ALLOW ne veut pas automatiquement dire vulnérable. Vérifie que la ressource accédée appartient bien au compte high-priv et pas au low-priv, que les données retournées sont bien sensibles, et que c'est pas un endpoint intentionnellement public.
 
 Les résultats en vert marqués DENY indiquent que la requête a été refusée avec un 401, 403 ou 404. L'access control fonctionne.
 
@@ -102,7 +102,7 @@ L'idée c'est pas d'avoir un 200, c'est de montrer que ça ne bloque pas côté 
 
 Un `200 OK` sur un DELETE n'est pas automatiquement une preuve safe, parce qu'un 200 peut déjà vouloir dire "c'est supprimé". Ce que tu veux prouver, c'est que la requête a passé l'autorisation et a atteint la logique métier, sans avoir besoin de casser les données.
 
-Ce que tu cherches idéalement : un comportement qui échoue APRÈS la phase d'autorisation — une erreur de précondition, de validation, de payload invalide. Si tu obtiens un 412 ou un 400 au lieu d'un 403, c'est un signal fort que l'endpoint est atteignable sans contrôle d'accès.
+Ce que tu cherches idéalement : un comportement qui échoue APRÈS la phase d'autorisation, une erreur de précondition, de validation, de payload invalide. Si tu obtiens un 412 ou un 400 au lieu d'un 403, c'est un signal fort que l'endpoint est atteignable sans contrôle d'accès.
 
 ---
 
@@ -153,7 +153,7 @@ Les développeurs stockent l'ID d'organisation dans plein d'endroits. Dans l'URL
 
 Le test le plus safe et souvent suffisant pour prouver le problème d'isolation c'est le cross-org data access en lecture. Tu es dans l'org 42, tu testes l'accès à l'org 43 avec `GET /api/org/43/users`. Si tu reçois la liste des users de l'org 43, t'as trouvé.
 
-Tu peux aussi essayer l'org switching en manipulant ton propre profil avec `PUT /api/me` et `{"org_id": 43}`. Si ça marche, vérifie en faisant un GET sur ton profil — tu as changé d'org sans y être invité.
+Tu peux aussi essayer l'org switching en manipulant ton propre profil avec `PUT /api/me` et `{"org_id": 43}`. Si ça marche, vérifie en faisant un GET sur ton profil, tu as changé d'org sans y être invité.
 
 Le multi-tenant est compliqué à implémenter correctement. Les devs doivent vérifier l'appartenance à l'org sur chaque requête et s'assurer que les queries DB sont toujours filtrées par org_id. Souvent ils implémentent le check au niveau de l'authentification ("ce user existe-t-il dans cette org ?") mais oublient le check au niveau de l'autorisation ("ce user a-t-il le droit d'accéder à CETTE ressource dans CETTE org ?").
 
@@ -170,7 +170,7 @@ for i in range(1, 1000000):
 
 Tu te fais rate-limit au bout de 100 requêtes, ton IP se fait ban, l'équipe sécu reçoit une alerte et ton compte est suspendu, ton rapport est rejeté pour "testing excessif".
 
-C'est pas nécessaire pour prouver la vuln — si tu accèdes à 5 ressources qui ne t'appartiennent pas, t'as prouvé l'IDOR. Pas besoin d'en récupérer 10 000. C'est hors scope — la plupart des programmes interdisent l'extraction massive de données, même via une vuln légitime. C'est détectable — les équipes sécu ont des alertes sur les patterns d'énumération. C'est potentiellement illégal — selon la juridiction, extraire des données en masse peut être considéré différemment d'un simple test de sécurité.
+C'est pas nécessaire pour prouver la vuln. Si tu accèdes à 5 ressources qui ne t'appartiennent pas, t'as prouvé l'IDOR. Pas besoin d'en récupérer 10 000. C'est hors scope. La plupart des programmes interdisent l'extraction massive de données, même via une vuln légitime. C'est détectable — les équipes sécu ont des alertes sur les patterns d'énumération. C'est potentiellement illégal, selon la juridiction, extraire des données en masse peut être considéré différemment d'un simple test de sécurité.
 
 Vérifie que l'IDOR existe sur 3-5 IDs différents, manuellement, à des intervalles normaux. Documente le pattern : "Les IDs sont séquentiels de 1 à N. J'ai vérifié que les IDs 100, 101, 102 (qui ne m'appartiennent pas) sont accessibles. Le même pattern s'applique vraisemblablement à tous les IDs." Estime l'échelle : si t'as accès à un endpoint qui liste le nombre total d'objets ou le dernier ID créé, mentionne-le. "Le dernier document créé a l'ID 847293, suggérant que ~850K documents sont potentiellement exposés."
 
