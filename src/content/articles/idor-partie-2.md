@@ -27,7 +27,7 @@ Dans l'interface Autorize, va dans Configuration puis Mutations puis Mutated. Aj
 
 Pour le No-Auth, Autorize retire automatiquement les headers Authorization et Cookie par défaut. Si ton app utilise un mécanisme d'auth custom comme un header `X-Auth-Token`, tu peux ajouter une mutation pour le retirer explicitement.
 
-Une application web génère beaucoup de bruit — assets statiques, requêtes analytics, health checks. Tu veux pas qu'Autorize teste tout ça. Dans Configuration puis Filtering, tu peux appliquer un scope preset ou utiliser une requête HTTPQL pour filtrer. Par exemple `req.path:/api/ AND NOT req.path.ext:(js OR css OR png OR jpg)` pour ne tester que les endpoints API.
+Une application web génère beaucoup de bruit : assets statiques, requêtes analytics, health checks. Tu veux pas qu'Autorize teste tout ça. Dans Configuration puis Filtering, tu peux appliquer un scope preset ou utiliser une requête HTTPQL pour filtrer. Par exemple `req.path:/api/ AND NOT req.path.ext:(js OR css OR png OR jpg)` pour ne tester que les endpoints API.
 
 Clique sur "Enable Passive Scanning" en haut à droite, déconnecte-toi du compte low-priv, connecte-toi avec le compte high-privilege, et navigue normalement dans l'application. En arrière-plan, Autorize intercepte chaque requête et la teste automatiquement.
 
@@ -84,7 +84,7 @@ Tu testes un endpoint, tu reçois un 403 Forbidden, tu te dis "c'est protégé, 
 
 **Raison 1 : les autres verbes ne sont pas forcément protégés.** Les développeurs implémentent souvent l'access control de manière incohérente. Le dev se dit "je dois protéger l'accès aux profils utilisateurs", il ajoute un check sur `GET /api/users/:id`, mission accomplie, il passe à autre chose. Mais l'app a aussi `PUT /api/users/:id` pour modifier, `DELETE /api/users/:id` pour supprimer, `PATCH /api/users/:id` pour mise à jour partielle. Et ces endpoints ? Pas de check. Parce que "si on peut pas lire, pourquoi on pourrait modifier ?" Sauf que c'est pas comme ça que HTTP fonctionne.
 
-**Raison 2 : un 403 ne garantit pas que rien ne s'est passé.** Certains backends exécutent l'action AVANT de vérifier l'autorisation, ou dans un ordre incohérent. Tu reçois 403, tu penses "c'est bloqué", mais la ressource a été supprimée côté serveur. C'est rare, mais ça arrive — surtout sur du code legacy, des middlewares mal chaînés, ou des architectures microservices où l'authz est dans un service séparé qui répond après l'exécution. Quand tu testes un endpoint destructif, vérifie TOUJOURS l'état de la ressource après coup, même si t'as reçu un 403.
+**Raison 2 : un 403 ne garantit pas que rien ne s'est passé.** Certains backends exécutent l'action AVANT de vérifier l'autorisation, ou dans un ordre incohérent. Tu reçois 403, tu penses "c'est bloqué", mais la ressource a été supprimée côté serveur. C'est rare, mais ça arrive, surtout sur du code legacy, des middlewares mal chaînés, ou des architectures microservices où l'authz est dans un service séparé qui répond après l'exécution. Quand tu testes un endpoint destructif, vérifie TOUJOURS l'état de la ressource après coup, même si t'as reçu un 403.
 
 ### Quoi tester
 
