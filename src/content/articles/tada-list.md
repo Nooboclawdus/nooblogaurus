@@ -29,7 +29,7 @@ Sauf que ça marche pas comme ça.
 
 En vrai, ta to-do list c'est un catalogue de tout ce que t'as PAS ENCORE fait. Chaque item non coché est un petit rappel que t'es en retard, que t'as pas assez avancé, que t'aurais dû faire ça hier. Et le truc vicieux c'est que la liste grandit plus vite qu'elle se vide. Tu coches trois trucs, tu en ajoutes cinq. Le ratio est toujours contre toi.
 
-Y'a un nom pour ça. L'**effet Zeigarnik**. Dans les années 1920, la psychologue Bluma Zeigarnik a montré que le cerveau retient les tâches inachevées **90% mieux** que les tâches terminées. Autrement dit, ton cerveau est littéralement câblé pour se souvenir de ce que t'as pas fait et oublier ce que t'as fait.
+Y'a un nom pour ça. L'**effet Zeigarnik**. Dans les années 1920, la psychologue Bluma Zeigarnik a montré que le cerveau retient les tâches inachevées **90% mieux** que les tâches terminées. Autrement dit, ton cerveau est littéralement câblé pour se souvenir de ce que t'as pas fait et oublier ce que t'as fait. C'est controversé, comme recherche, mais l'idée derrière ça reste valide, à mes yeux.
 
 Ta to-do list exploite ce biais. Elle te montre en permanence l'écart entre où t'en es et où tu devrais être. Résultat : t'as bossé comme un malade, t'as sorti du code propre, répondu à 30 messages, résolu un bug vicieux, et le soir tu regardes ta liste et tu te dis "j'ai rien fait". Parce que les trois items que t'avais écrits le matin, tu les as pas touchés. Le reste comptait pas vu que c'était pas sur la liste.
 
