@@ -1,0 +1,73 @@
+<svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace">
+  <rect width="800" height="500" fill="#0d1117"/>
+
+  <text x="400" y="34" fill="#c9d1d9" font-size="17" text-anchor="middle" font-weight="bold">
+    Comment Kedro construit le chemin
+  </text>
+  <text x="400" y="56" fill="#8b949e" font-size="12" text-anchor="middle">
+    self._filepath / version / self._filepath.name
+  </text>
+
+  <!-- LEFT: legitimate -->
+  <g transform="translate(30, 90)">
+    <rect width="350" height="380" rx="8" fill="#0d1117" stroke="#3fb950" stroke-width="1.5"/>
+    <rect width="350" height="32" rx="8" fill="#3fb950" fill-opacity="0.15"/>
+    <rect y="22" width="350" height="10" fill="#3fb950" fill-opacity="0.15"/>
+    <text x="175" y="22" fill="#3fb950" font-size="13" text-anchor="middle" font-weight="bold">
+      ✓  VERSION LÉGITIME
+    </text>
+
+    <text x="20" y="68" fill="#8b949e" font-size="11">input :</text>
+    <rect x="20" y="78" width="310" height="34" rx="4" fill="#161b22" stroke="#30363d"/>
+    <text x="175" y="100" fill="#c9d1d9" font-size="12" text-anchor="middle">
+      version = "2024-01-15T10.00.00Z"
+    </text>
+
+    <text x="20" y="138" fill="#8b949e" font-size="11">construction :</text>
+    <rect x="20" y="148" width="310" height="62" rx="4" fill="#161b22" stroke="#30363d"/>
+    <text x="175" y="172" fill="#58a6ff" font-size="11" text-anchor="middle">data/01_raw/users.csv</text>
+    <text x="175" y="190" fill="#c9d1d9" font-size="11" text-anchor="middle">  /  2024-01-15T...  /  users.csv</text>
+
+    <text x="175" y="232" fill="#3fb950" font-size="18" text-anchor="middle">↓</text>
+
+    <text x="20" y="258" fill="#8b949e" font-size="11">résolution :</text>
+    <rect x="20" y="268" width="310" height="56" rx="4" fill="#0d2818" stroke="#3fb950"/>
+    <text x="175" y="290" fill="#3fb950" font-size="11" text-anchor="middle" font-weight="bold">data/01_raw/users.csv/</text>
+    <text x="175" y="308" fill="#3fb950" font-size="11" text-anchor="middle">2024-01-15T.../users.csv</text>
+
+    <text x="175" y="356" fill="#3fb950" font-size="13" text-anchor="middle" font-weight="bold">→ dataset versionné</text>
+  </g>
+
+  <!-- RIGHT: traversal -->
+  <g transform="translate(420, 90)">
+    <rect width="350" height="380" rx="8" fill="#0d1117" stroke="#f85149" stroke-width="1.5"/>
+    <rect width="350" height="32" rx="8" fill="#f85149" fill-opacity="0.15"/>
+    <rect y="22" width="350" height="10" fill="#f85149" fill-opacity="0.15"/>
+    <text x="175" y="22" fill="#f85149" font-size="13" text-anchor="middle" font-weight="bold">
+      ⚠  PATH TRAVERSAL
+    </text>
+
+    <text x="20" y="68" fill="#8b949e" font-size="11">input :</text>
+    <rect x="20" y="78" width="310" height="34" rx="4" fill="#161b22" stroke="#f85149" stroke-dasharray="3,2"/>
+    <text x="175" y="100" fill="#f85149" font-size="12" text-anchor="middle">
+      version = "../../../secrets"
+    </text>
+
+    <text x="20" y="138" fill="#8b949e" font-size="11">construction :</text>
+    <rect x="20" y="148" width="310" height="62" rx="4" fill="#161b22" stroke="#30363d"/>
+    <text x="175" y="172" fill="#58a6ff" font-size="11" text-anchor="middle">data/01_raw/users.csv</text>
+    <text x="175" y="190" fill="#f85149" font-size="11" text-anchor="middle">  /  ../../../secrets  /  users.csv</text>
+
+    <text x="175" y="232" fill="#f85149" font-size="18" text-anchor="middle">↓</text>
+
+    <text x="20" y="258" fill="#8b949e" font-size="11">résolution :</text>
+    <rect x="20" y="268" width="310" height="56" rx="4" fill="#2d0d0d" stroke="#f85149"/>
+    <text x="175" y="300" fill="#f85149" font-size="14" text-anchor="middle" font-weight="bold">secrets/users.csv</text>
+
+    <text x="175" y="356" fill="#f85149" font-size="13" text-anchor="middle" font-weight="bold">→ fichier hors-scope</text>
+  </g>
+
+  <text x="400" y="490" fill="#6e7681" font-size="10" text-anchor="middle" font-style="italic">
+    seul garde-fou : le filename final reste figé (users.csv)
+  </text>
+</svg>
