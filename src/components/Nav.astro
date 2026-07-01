@@ -11,7 +11,7 @@ const currentPath = Astro.url.pathname;
 ---
 
 <nav class="border-b border-[var(--color-border)] bg-[var(--color-bg)]">
-  <div class="max-w-5xl mx-auto px-4">
+  <div class="max-w-6xl mx-auto px-4">
     <div class="flex items-center justify-between h-16">
       <!-- Logo -->
       <a href="/" class="flex items-center gap-3 hover:opacity-100">
@@ -72,12 +72,17 @@ const currentPath = Astro.url.pathname;
 </nav>
 
 <script>
-  const btn = document.getElementById('mobile-menu-btn');
-  const menu = document.getElementById('mobile-menu');
-  
-  btn?.addEventListener('click', () => {
-    const expanded = btn.getAttribute('aria-expanded') === 'true';
-    btn.setAttribute('aria-expanded', String(!expanded));
-    menu?.classList.toggle('hidden');
+  // Runs on first load and after every view-transition navigation,
+  // re-binding to the freshly swapped nav DOM.
+  document.addEventListener('astro:page-load', () => {
+    const btn = document.getElementById('mobile-menu-btn');
+    const menu = document.getElementById('mobile-menu');
+    if (!btn || !menu) return;
+
+    btn.addEventListener('click', () => {
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!expanded));
+      menu.classList.toggle('hidden');
+    });
   });
 </script>

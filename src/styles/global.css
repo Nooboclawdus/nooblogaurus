@@ -5,7 +5,7 @@
   --color-bg-alt: #111111;
   --color-bg-card: #161616;
   --color-text: #e5e5e5;
-  --color-text-muted: #6b7280;
+  --color-text-muted: #9ca3af;
   --color-accent: #4ade80;
   --color-accent-dim: #22c55e;
   --color-danger: #ef4444;
@@ -20,6 +20,10 @@
     background-color: var(--color-bg);
     color: var(--color-text);
     font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) var(--color-bg);
   }
   
   body {
@@ -193,4 +197,109 @@ pre {
 
 .hljs-link {
   text-decoration: underline;
+}
+
+/* ============================================================
+   Front-end polish (modern-facelift batch 2)
+   ============================================================ */
+
+/* Long-form body copy uses the primary text color, not muted.
+   The #main-content ID keeps this winning over the per-page prose rules. */
+#main-content .prose-article p,
+#main-content .prose-article li,
+#main-content .prose-sheet p,
+#main-content .prose-sheet li {
+  color: var(--color-text);
+}
+
+/* Nicer line breaks */
+h1, h2, h3, h4 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* Dark scrollbar (WebKit/Blink) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border: 2px solid var(--color-bg);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+/* Reading progress bar */
+#reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background: linear-gradient(90deg, var(--color-accent-dim), var(--color-accent));
+  z-index: 60;
+  transition: width 0.1s linear;
+  pointer-events: none;
+}
+
+/* Enhanced code blocks: language label + copy button.
+   Built at runtime by wrapping each <pre> in article/sheet prose. */
+.code-wrap {
+  margin: 1.5rem 0;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.code-wrap pre {
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+
+.code-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.75rem;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.code-lang {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+.code-copy {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 0.25rem;
+  padding: 0.15rem 0.6rem;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.code-copy:hover,
+.code-copy.copied {
+  color: var(--color-accent);
+  border-color: var(--color-accent-dim);
 }

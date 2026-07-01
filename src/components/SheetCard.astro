@@ -9,7 +9,7 @@ interface Props {
 const { title, description, slug, category } = Astro.props;
 ---
 
-<article class="group border border-[var(--color-border)] rounded-lg p-5 bg-[var(--color-bg-card)] hover:border-[var(--color-accent-dim)] transition-colors">
+<article class="group border border-[var(--color-border)] rounded-lg p-5 bg-[var(--color-bg-card)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--color-accent-dim)] hover:shadow-[0_8px_24px_-8px_rgba(74,222,128,0.15)]">
   <a href={`/sheets/${slug}`} class="block">
     <div class="flex items-center gap-3 mb-3">
       <div class="w-10 h-10 rounded-lg bg-[var(--color-bg-alt)] flex items-center justify-center text-[var(--color-accent)]">
